@@ -7,3 +7,4 @@ https://qiita.com/dario_okazaki/items/7892b24fcfa787faface
 https://pyky.github.io/kivy-doc-ja/guide-index.html
 
 -Hashimoto push
+-agrain pusshed
