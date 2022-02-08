@@ -43,8 +43,11 @@ git pull<br>
 <br>
 
 ## 開発の進め方
-
-### 1. developからfeatureブランチを切る<br>
+### 1. developを最新の状態にする<br>
+* ***!!!!!!!!!!!!必ず実行してください!!!!!!!!!!!!!!!!!!!!!***
+* (developにいる状態で) git pull
+* **!!!!!!どんなときでも新しくブランチを切るときは、必ず最新の状態にしてから切ってください!!!!!!!**
+### 2. developからfeatureブランチを切る<br>
 * featureを作成<br>
 (developにいる状態で) git branch feature/<このブランチでやることを端的に表した名前><br>
 > 例: カレンダーを作る => feature/createCalendar
@@ -53,8 +56,9 @@ git checkout feature/<付けた名前><br>
 * あまり大きな単位でブランチを切らないほうがいい<br>
 > × カレンダーを作り、日付を表示して、通知機能を付ける<br>
 > ○ カレンダーの枠組みを作る
-### 2. **featureブランチで機能を実装する**<br>
-### 3. commitする<br>
+
+### 3. **featureブランチで機能を実装する**<br>
+### 4. commitする<br>
 * commitしたいファイルをステージングする<br>
  git add <コミットの対象とするファイル><br>
 > [例]<br>
@@ -67,12 +71,12 @@ git checkout feature/<付けた名前><br>
 > [例]<br>
 > 時間割の枠組みを作成しました。<br>
 > コマをクリックしたときにウインドウが出るようにしました。<br>
-### 4. **pushする**
+### 5. **pushする**
 * 始めてpushする時<br>
 		git push -u origin <そのブランチの名前>
 * 2回目以降<br>
 		git push<br>
-### 5. **pull requestを出す** <br>
+### 6. **pull requestを出す** <br>
 * https://github.com/Takeda-Takumi/TimeTable にアクセスして、赤枠をクリック<br>
 	![image](https://user-images.githubusercontent.com/91676218/152789679-f823601b-6c6d-4bf6-9cc9-202654096c48.png)<br>
 	<br><br>
@@ -90,7 +94,7 @@ git checkout feature/<付けた名前><br>
 * コメントを書いて, Create pull requestを押す<br>
 	![image](https://user-images.githubusercontent.com/91676218/152793861-e8e633fa-154e-4c09-83ab-23bf264ea457.png)<br>
 <br><br><br><br><br>
-### 6. **mergeしてもらう**
+### 7. **mergeしてもらう**
 * pull requestができると、ホーム画面のPull requestの所に通知が出ます<br>
 	![image](https://user-images.githubusercontent.com/91676218/152794653-3e15ee1d-aa28-4576-8a30-bd0e9d7f28c5.png)<br>
 	![image](https://user-images.githubusercontent.com/91676218/152794907-afd79574-4188-4f85-9a9f-1d7f544e9773.png)<br>
@@ -107,7 +111,7 @@ git checkout feature/<付けた名前><br>
 	<br><br>
 * ***mergeは基本的に自分以外の人が行ってください***<br>ただし、他の人がおらず時間がかかるようであれば自分でmergeしても構いません<br>
 <br><br><br><br><br>
-### 7. **featureブランチの削除**<br>
+### 8. **featureブランチの削除**<br>
 * mergeを行ったら、mergeしたfeatureブランチは削除してください<br>
 * ①と②を順番にクリック<br>
 	![image](https://user-images.githubusercontent.com/91676218/152797504-dccd44ae-b693-4ece-aed3-57bd8955db11.png)<br>
