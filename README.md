@@ -8,12 +8,34 @@ https://pyky.github.io/kivy-doc-ja/guide-index.html
 
 -Hashimoto push
 
+
 # 基本的な開発手順
 ### このリモートリポジトリを4人で共有します
 このリモートリポジトリを直接各々のローカル環境に落としてもらって、featureブランチが完成したらpushしてプルリク出して、github上でdevelopにmergeするスタンスでやります。
 
 ### forkは使わなくていいと思う 
 そもそもgitに慣れてないし、fork使うと若干手間がかかる。OSSみたいに知らない人とやるわけでもないし、1つのリモートリポジトリを共有して開発するほうが楽だし、gitに慣れるにはいいと思う
+
+## 命名規則
+### 使用する規則
+- PascalCase(UpperCamelCase)
+	- 先頭を大文字にし、単語の区切りを大文字にする<br>
+	myfirstproject -> MyFirstProject
+- snake_case
+ 	- 単語はすべて小文字で、単語の区切りを_(アンダースコア)で仕切る<br>
+	myfirstproject -> my_first_project	
+
+|場所|命名方法|
+|--------|--------|
+|クラス|PascalCase|
+|クラスメソッド|snake_case|
+|クラス変数|snake_case|
+|privateなクラスメソッド|snake_case|
+|privateなクラスメソッド|snake_case|
+|変数|snake_case|
+|ファイル名|snake_case|
+
+
 
 ## 初期設定
 
