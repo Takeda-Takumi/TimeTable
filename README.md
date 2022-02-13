@@ -116,7 +116,7 @@ git checkout feature/<付けた名前><br>
 * コメントを書いて, Create pull requestを押す<br>
 	![image](https://user-images.githubusercontent.com/91676218/152793861-e8e633fa-154e-4c09-83ab-23bf264ea457.png)<br>
 <br><br><br><br><br>
-### 7. **mergeしてもらう**
+### 7. **developにmergeする**
 * pull requestができると、ホーム画面のPull requestの所に通知が出ます<br>
 	![image](https://user-images.githubusercontent.com/91676218/152794653-3e15ee1d-aa28-4576-8a30-bd0e9d7f28c5.png)<br>
 	![image](https://user-images.githubusercontent.com/91676218/152794907-afd79574-4188-4f85-9a9f-1d7f544e9773.png)<br>
@@ -131,7 +131,12 @@ git checkout feature/<付けた名前><br>
 	![image](https://user-images.githubusercontent.com/91676218/152795908-056d0859-016f-4729-994c-cc8fcb91e711.png)<br>
 	![image](https://user-images.githubusercontent.com/91676218/152796110-0dbaecc2-cf8a-45a5-bd34-a7519d135f1f.png)<br>
 	<br><br>
-* ***mergeは基本的に自分以外の人が行ってください***<br>ただし、他の人がおらず時間がかかるようであれば自分でmergeしても構いません<br>
+* **今回のプロジェクトでは自分でmergeしてしまって構いません**<br>
+	* 各個人で自由に作業してもらっているため、他の人にマージしてもらう方法だとマージしてもらうまでの待機時間が長くなってしまうので、今回は自分でmergeしていいことにします。<br>
+	* 誰かと作業時間が揃っていたら、練習がてらコードレビューをしてマージしてみてください。
+	* 実際の開発では、自分でマージせず上司の方や他の人にコードレビューをしてもらってからマージします。
+
+
 <br><br><br><br><br>
 ### 8. **featureブランチの削除**<br>
 * mergeを行ったら、mergeしたfeatureブランチは削除してください<br>
