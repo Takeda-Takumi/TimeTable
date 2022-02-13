@@ -60,27 +60,25 @@ class Subject:
 
     # id番目の課題の名前を設定する
     def set_asg_name(self, id, name):
-        self._assignments[id].set_name(name)
+        if id < self._asg_num and id >= 0:
+            self._assignments[id].set_name(name)
 
     # id番目の課題の締切日を設定する
     def set_asg_deadline(self, id, year, month, day, hour, minutes):
-        self._assignments[id].set_deadline(year, month, day, hour, minutes)
+        if id < self._asg_num and id >= 0:
+            self._assignments[id].set_deadline(year, month, day, hour, minutes)
 
     # 締切日が最も近い課題の名前を返す
     def get_close_asg_name(self):
         if self._asg_num == 0:
             return ""
         else:
-            min_d = datetime.max
-            min_n = ""
-            for i in range(len(self._assignments)):
-                if i == 0:
-                    min_d = self._assignments[0].get_deadline()
-                    min_n = self._assignments[0].get_name()
-                else:
-                    if min_d > self._assignments[i].get_deadline():
-                        min_d = self._assignments[i].get_deadline()
-                        min_n = self._assignments[i].get_name()
+            min_d = self._assignments[0].get_deadline()
+            min_n = self._assignments[0].get_name()
+            for i in range(1, self._asg_num):
+                if min_d > self._assignments[i].get_deadline():
+                    min_d = self._assignments[i].get_deadline()
+                    min_n = self._assignments[i].get_name()
 
             return min_n
 
@@ -89,12 +87,9 @@ class Subject:
         if self._asg_num == 0:
             return datetime.max
         else:
-            min_d = datetime.max
-            for i in range(len(self._assignments)):
-                if i == 0:
-                    min_d = self._assignments[0].get_deadline()
-                else:
-                    if min_d > self._assignments[i].get_deadline():
-                        min_d = self._assignments[i].get_deadline()
+            min_d = self._assignments[0].get_deadline()
+            for i in range(1, self._asg_num):
+                if min_d > self._assignments[i].get_deadline():
+                    min_d = self._assignments[i].get_deadline()
 
             return min_d
