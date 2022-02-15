@@ -2,62 +2,9 @@
 import tkinter as tk
 from datetime import datetime
 
-# subject.py のインポート
-import subject as sj
+# 別ファイルのインポート
 import detail_window as dw
-
-# Widgetクラスを別のファイルにしたとき用
-# import widget as wg
-
-# ボタンとサブジェクトデータを持つクラス
-class Widget(tk.Button):
-    def __init__(self):
-        self._subject = sj.Subject()
-        self._button = tk.Button(bg="#EAECEE", width=14, height=5, borderwidth=0, command=self.button_func)
-
-    # ボタンが押されたときの関数
-    def button_func(self):
-        app.button_func(self)
-        # ボタンが押されたときに全てのボタンを押せなくするためにappの関数を実行している影響で別ファイルにできなかった。
-        # 別ファイルにする方法
-        # １．ボタンを押せなくしない（Widgetクラスだけで完結させる）
-        # ２．ボタンとサブジェクトを別で管理する（そもそも別のクラス必要なくなるが、対応付けが面倒）
-        # ３．画期的なアイデア募
-
-    # ボタンを配置する
-    def set_grid(self, c, r):
-        self._button.grid(column=c, row=r)
-
-    # 表示するテキストを変更する
-    def change_text(self):
-        if self._subject.get_asg_num() == 0: # 課題の数が0なら科目名のみ
-            self._button["text"] = self._subject.get_name()
-        else: # 科目名\n締切が最も近い課題名\n最も近い締切日
-            self._button["text"] = self._subject.get_name()+"\n"+self._subject.get_close_asg_name()+"\n"+self._subject.get_close_asg_deadline().strftime("%Y/%m/%d/%H:%M")
-
-    # ボタンの色を変える
-    def set_color(self, color):
-        self._button["bg"] = color
-
-    # ボタンを押せなくする
-    def stop_button(self):
-        self._button["state"] = tk.DISABLED
-
-    # ボタンを押せるようにする
-    def restart_button(self):
-        self._button["state"] = tk.NORMAL
-
-    # _subjectをそのままを返す
-    def get_subject(self):
-        return self._subject
-
-    # _subjectの_nameを返す
-    def get_sj_name(self):
-        return self._subject.get_name()
-
-    # _subjectの課題の中で最も近い締切日を返す
-    def get_sj_close_asg_deadline(self):
-        return self._subject.get_close_asg_deadline()
+import widget as wg
 
 
 class Application(tk.Frame):
@@ -66,7 +13,7 @@ class Application(tk.Frame):
         self.master.geometry("800x600")
         self.master.title("TimeTable")
         self._detail_window = None # DetailWindow型の変数
-        self._dw_is_opened = False # _detail_windowがすでに開いてるかどうかの変数
+        self._dw_is_open = False # _detail_windowがすでに開いてるかどうかの変数
 
         # ラベルを作成、配置
         labelMon = tk.Label(text="月", width = 14, height = 5)
@@ -96,7 +43,7 @@ class Application(tk.Frame):
         label.grid(column=0, row=6)
 
         # ウィジェットを作成
-        self.widgets = [Widget() for i in range(36)]
+        self.widgets = [wg.Widget(self) for i in range(36)]
         for i in range(6):
             for j in range(6):
                 # ウィジェットのボタンを配置
@@ -129,21 +76,21 @@ class Application(tk.Frame):
 
 
     def button_func(self, widget):
-        # ---詳細ウィンドウを開いているときはボタンを押せなくする方法---
+        # # ---詳細ウィンドウを開いているときはボタンを押せなくする方法---
         # # detail_windowでの処理が終わるまでボタンを押せなくする
         # for wgt in self.widgets:
         #     wgt.stop_button()
         # # detail_windowを開く関数を実行
-        # dw.call_detail_window(widget.get_subject())
+        # dw.mkdw(self, widget.get_subject(), self._dw_is_open)
         # # detail_windowでの処理が終わったらボタンを押せるようにする
         # for wgt in self.widgets:
         #     wgt.restart_button()
-        # ------
+        # # ------
 
         # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
-        if not self._dw_is_opened:
-            self._dw_is_opened = True
-            self._detail_window = dw.DetailWindow(self, widget.get_subject(), self._dw_is_opened)
+        if not self._dw_is_open:
+            self._dw_is_open = True
+            self._detail_window = dw.DetailWindow(self, widget.get_subject(), self._dw_is_open)
             self._detail_window.show_window()
         # ------
 
@@ -158,13 +105,13 @@ class Application(tk.Frame):
     def update(self):
         for widget in self.widgets:
             widget.change_text() # テキストの更新
-            if widget.get_sj_name() == "":
+            if widget.get_subj_name() == "":
                 widget.set_color("#EAECEE") # 科目名空欄なら初期色
             else:
-                if widget.get_sj_close_asg_deadline() == datetime.max:
+                if widget.get_subj_close_asg_deadline() == datetime.max:
                     widget.set_color("#D5F5E3") # 課題期限ないなら白
                 else:
-                    sec = (widget.get_sj_close_asg_deadline() - datetime.now()).total_seconds()
+                    sec = (widget.get_subj_close_asg_deadline() - datetime.now()).total_seconds()
                     if(sec > 604800):
                         widget.set_color("#ABEBC6") # 1週間以上なら緑
                     elif(sec > 259200):
@@ -173,6 +120,10 @@ class Application(tk.Frame):
                         widget.set_color("#E74C3C") # 3日以内なら赤
 
         self.after(60000, self.update) # 60000ms後にもう一度実行
+
+    def change_text(self):
+        for widget in self.widgets:
+            widget.change_text() # テキストの更新
 
 
 ##------------------
