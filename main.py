@@ -90,7 +90,7 @@ class Application(tk.Frame):
         # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
         if not self._dw_is_open:
             self._dw_is_open = True
-            self._detail_window = dw.DetailWindow(self, widget.get_subject(), self._dw_is_open)
+            self._detail_window = dw.DetailWindow(self, widget.get_subject())
             self._detail_window.show_window()
         # ------
 
@@ -100,9 +100,9 @@ class Application(tk.Frame):
         # a = dw.DetailWindow(subject)
         # ---------------------
 
-    
-    # 60000ms(1分)ごとにテキストとボタンの色を変更
-    def update(self):
+
+    # widgetsのテキストと色を更新する関数
+    def change_text_and_color(self):
         for widget in self.widgets:
             widget.change_text() # テキストの更新
             if widget.get_subj_name() == "":
@@ -119,11 +119,15 @@ class Application(tk.Frame):
                     else:
                         widget.set_color("#E74C3C") # 3日以内なら赤
 
-        self.after(60000, self.update) # 60000ms後にもう一度実行
+    # detail_windowが閉じたときに_dw_is_openとテキスト、色を更新する関数
+    def dw_close(self):
+        self._dw_is_open = False
+        self.change_text_and_color()
 
-    def change_text(self):
-        for widget in self.widgets:
-            widget.change_text() # テキストの更新
+    # 60000ms(1分)ごとにテキストとボタンの色を変更
+    def update(self):
+        self.change_text_and_color()
+        self.after(60000, self.update) # 60000ms後にもう一度実行
 
 
 ##------------------
