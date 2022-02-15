@@ -4,6 +4,7 @@ from datetime import datetime
 
 # subject.py のインポート
 import subject as sj
+import detail_window as dw
 
 # Widgetクラスを別のファイルにしたとき用
 # import widget as wg
@@ -64,6 +65,8 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.master.geometry("800x600")
         self.master.title("TimeTable")
+        self._detail_window = None # DetailWindow型の変数
+        self._dw_is_opened = False # _detail_windowがすでに開いてるかどうかの変数
 
         # ラベルを作成、配置
         labelMon = tk.Label(text="月", width = 14, height = 5)
@@ -126,20 +129,29 @@ class Application(tk.Frame):
 
 
     def button_func(self, widget):
-        # detail_windowでの処理が終わるまでボタンを押せなくする
-        for wgt in self.widgets:
-            wgt.stop_button()
-        # detail_windowを開く関数を実行
-        self.call_detail_window(widget.get_subject())
-        # detail_windowでの処理が終わったらボタンを押せるようにする
-        for wgt in self.widgets:
-            wgt.restart_button()
+        # ---詳細ウィンドウを開いているときはボタンを押せなくする方法---
+        # # detail_windowでの処理が終わるまでボタンを押せなくする
+        # for wgt in self.widgets:
+        #     wgt.stop_button()
+        # # detail_windowを開く関数を実行
+        # dw.call_detail_window(widget.get_subject())
+        # # detail_windowでの処理が終わったらボタンを押せるようにする
+        # for wgt in self.widgets:
+        #     wgt.restart_button()
+        # ------
+
+        # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
+        if not self._dw_is_opened:
+            self._dw_is_opened = True
+            self._detail_window = dw.DetailWindow(self, widget.get_subject(), self._dw_is_opened)
+            self._detail_window.show_window()
+        # ------
 
     
-    def call_detail_window(self, subject):
+    # def call_detail_window(self, subject):
         # detail_windowを開く処理（閉じるまで処理を続けるか、閉じたときに何か返してもらえばok）------
+        # a = dw.DetailWindow(subject)
         # ---------------------
-        return
 
     
     # 60000ms(1分)ごとにテキストとボタンの色を変更
