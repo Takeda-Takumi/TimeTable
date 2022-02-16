@@ -5,14 +5,18 @@ import tkinter as tk
 import subject as subj
 
 class Widget(tk.Button):
-    def __init__(self, root):
-        self._root = root
+    def __init__(self):
+        self._func = lambda self:print("ボタンを押したときの関数をセットしてください")
         self._subject = subj.Subject()
         self._button = tk.Button(bg="#EAECEE", width=14, height=5, borderwidth=0, command=self.button_func)
 
+    # ボタンが押されたときに実行する関数をセットする関数。現状Widgetクラスを引数に持つ関数だけ設定可能。
+    def set_button_func(self, func):
+        self._func = func
+
     # ボタンが押されたときの関数
     def button_func(self):
-        self._root.button_func(self) # 親ウィジェット側で実行する関数の内容変更可能
+        self._func(self) # セットした関数を実行する。現状Widgetクラスを引数に持つ関数だけ実行可能。
 
     # ボタンを配置する
     def set_grid(self, c, r):
@@ -44,6 +48,10 @@ class Widget(tk.Button):
     # _subjectの_nameを返す
     def get_subj_name(self):
         return self._subject.get_name()
+
+    # _subjectの_asg_numを返す
+    def get_subj_asg_num(self):
+        return self._subject.get_asg_num()
 
     # _subjectの課題の中で最も近い締切日を返す
     def get_subj_close_asg_deadline(self):

@@ -43,9 +43,11 @@ class Application(tk.Frame):
         label.grid(column=0, row=6)
 
         # ウィジェットを作成
-        self.widgets = [wg.Widget(self) for i in range(36)]
+        self.widgets = [wg.Widget() for i in range(36)]
         for i in range(6):
             for j in range(6):
+                # ボタンの関数を設定
+                self.widgets[6*i+j].set_button_func(self.button_func)
                 # ウィジェットのボタンを配置
                 self.widgets[6*i+j].set_grid(j+1, i+1)
 
@@ -75,38 +77,42 @@ class Application(tk.Frame):
         self.widgets[20]._subject.set_asg_deadline(0, 2022, 2, 16, 15, 0)
 
 
+    # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
     def button_func(self, widget):
-        # # ---詳細ウィンドウを開いているときはボタンを押せなくする方法---
-        # # detail_windowでの処理が終わるまでボタンを押せなくする
-        # for wgt in self.widgets:
-        #     wgt.stop_button()
-        # # detail_windowを開く関数を実行
-        # dw.mkdw(self, widget.get_subject(), self._dw_is_open)
-        # # detail_windowでの処理が終わったらボタンを押せるようにする
-        # for wgt in self.widgets:
-        #     wgt.restart_button()
-        # # ------
-
-        # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
         if not self._dw_is_open:
             self._dw_is_open = True
             self._detail_window = dw.DetailWindow(self, widget.get_subject())
-            self._detail_window.show_window()
-        # ------
+            self._detail_window._set_func_restore(self.change_text_and_color)
+            self._detail_window._set_func(self.dw_close)
+            has = tk.BooleanVar(value=True) # これはboolean型変数を参照渡しするだけだからいらなそう
+            self._detail_window.show_window(has) # ここも引数なくてよさそう
+    # ------
 
+    # # ---ボタンを押せなくする方法---
+    # def button_func(self, widget):
+    #     self.stop_buttons()
+    #     self._detail_window = dw.DetailWindow(self, widget.get_subject())
+    #     self._detail_window._set_func_restore(self.change_text_and_color)
+    #     self._detail_window._set_func(self.dw_close)
+    #     has = tk.BooleanVar(value=True)
+    #     self._detail_window.show_window(has)
     
-    # def call_detail_window(self, subject):
-        # detail_windowを開く処理（閉じるまで処理を続けるか、閉じたときに何か返してもらえばok）------
-        # a = dw.DetailWindow(subject)
-        # ---------------------
+    # def stop_buttons(self):
+    #     for wgt in self.widgets:
+    #         wgt.stop_button()
+
+    # def restart_buttons(self):
+    #     for wgt in self.widgets:
+    #         wgt.restart_button()
+    # # -------
 
 
     # widgetsのテキストと色を更新する関数
     def change_text_and_color(self):
         for widget in self.widgets:
             widget.change_text() # テキストの更新
-            if widget.get_subj_name() == "":
-                widget.set_color("#EAECEE") # 科目名空欄なら初期色
+            if widget.get_subj_name() == "" and widget.get_subj_asg_num() == 0:
+                widget.set_color("#EAECEE") # 科目名空欄かつ課題数0なら初期色
             else:
                 if widget.get_subj_close_asg_deadline() == datetime.max:
                     widget.set_color("#D5F5E3") # 課題期限ないなら白
