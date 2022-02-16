@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import tkinter as tk
+from functools import partial
 
 # subject.py のインポート
 import subject as subj
@@ -10,13 +11,14 @@ class Widget(tk.Button):
         self._subject = subj.Subject()
         self._button = tk.Button(bg="#EAECEE", width=14, height=5, borderwidth=0, command=self.button_func)
 
-    # ボタンが押されたときに実行する関数をセットする関数。現状Widgetクラスを引数に持つ関数だけ設定可能。
-    def set_button_func(self, func):
-        self._func = func
+    # ボタンが押されたときに実行する関数をセットする関数。
+    # Widget.set_button_func(<ボタンを押したときに実行する関数>, 引数1, 引数2, …)でセット可能。
+    def set_button_func(self, func, *args):
+        self._func = partial(func, *args)
 
     # ボタンが押されたときの関数
     def button_func(self):
-        self._func(self) # セットした関数を実行する。現状Widgetクラスを引数に持つ関数だけ実行可能。
+        self._func() # セットした関数を実行する。
 
     # ボタンを配置する
     def set_grid(self, c, r):
