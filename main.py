@@ -47,7 +47,7 @@ class Application(tk.Frame):
         for i in range(6):
             for j in range(6):
                 # ボタンの関数を設定
-                self.widgets[6*i+j].set_button_func(self.button_func)
+                self.widgets[6*i+j].set_button_func(self.button_func, self.widgets[6*i+j])
                 # ウィジェットのボタンを配置
                 self.widgets[6*i+j].set_grid(j+1, i+1)
 
@@ -82,10 +82,9 @@ class Application(tk.Frame):
         if not self._dw_is_open:
             self._dw_is_open = True
             self._detail_window = dw.DetailWindow(self, widget.get_subject())
-            self._detail_window._set_func_restore(self.change_text_and_color)
-            self._detail_window._set_func(self.dw_close)
-            has = tk.BooleanVar(value=True) # これはboolean型変数を参照渡しするだけだからいらなそう
-            self._detail_window.show_window(has) # ここも引数なくてよさそう
+            self._detail_window.set_func("window_closed", self.dw_close)
+            self._detail_window.set_func("on_restore", self.change_text_and_color)
+            self._detail_window.show_window()
     # ------
 
     # # ---ボタンを押せなくする方法---
