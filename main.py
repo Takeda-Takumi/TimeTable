@@ -61,7 +61,7 @@ class Application(tk.Frame):
         self.widgets[12]._subject.add_asg()
         self.widgets[12]._subject.set_asg_name(0, "小テスト")
         self.widgets[12]._subject.set_asg_deadline(0, 2022, 2, 14, 0, 0)
-        self.widgets[13]._subject.set_name("数理情報学３")
+        self.widgets[13]._subject.set_name("数理情報学3")
         self.widgets[15]._subject.set_name("科学技術英語")
         self.widgets[18]._subject.set_name("大規模・高速計算")
         self.widgets[18]._subject.add_asg()
@@ -85,8 +85,8 @@ class Application(tk.Frame):
             self._detail_window.set_func("window_closed", self.dw_close)
             self._detail_window.set_func("on_restore", self.change_text_and_color)
             self._detail_window.show_window()
+    
     # ------
-
     # # ---ボタンを押せなくする方法---
     # def button_func(self, widget):
     #     self.stop_buttons()
