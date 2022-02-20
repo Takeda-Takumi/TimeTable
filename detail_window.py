@@ -1,182 +1,10 @@
 import tkinter as tk
 import tkinter.font as f
+
 import subject as sb
+import custom_widgets as cw
 
 from functools import partial
-
-class GuideEntry(tk.Entry):
-    """
-    GideEntry
-        Guide付き Entryを生成するクラス
-        (未入力の際にガイドテキストを表示する)
-
-    ----------------
-    関数リファレンス
-
-    get             : Entry内のテキストを取得する
-    insert          : Entryにテキストを挿入する
-    set_alpha_str   : ガイドテキストを設定する
-    set_alpha_color : ガイドテキストの色を設定する
-    ----以下の関数はEntryのメンバ関数と同様---------
-    configure
-    bind
-    pack
-    """
-
-    def __init__(self, master=None, **kwargs):
-        """
-        初期化関数
-
-        Notes
-        -------------
-        オプションなどはEntryの初期化と同様
-        """
-        super().__init__(master)
-        self._alpha_str = ""
-        self._alpha_color= "SystemWindowText"
-        self._entry = tk.Entry(master, kwargs)
-        self._strv = tk.StringVar(value= "")
-        self._entry.configure(textvariable = self._strv)
-
-    def get(self):
-        """
-        Entry内のテキストを取得する
-
-        Returns
-        -------------
-        text : String
-            Entry内のテキスト
-        """
-        if ( self._strv.get() == self._alpha_str):
-            return ""
-        return self._strv.get()
-
-    def insert(self, str):
-        """
-        Entry内にテキストを挿入する
-
-        Parameters
-        -------------
-        str : String
-            Entry内に挿入するテキスト
-        """
-        self._strv.set(str)
-
-    def set_alpha_str(self, str):
-        """
-        ガイドテキストの文字列を設定する
-
-        Parameters
-        -------------
-        str : String
-            ガイドテキストに設定する文字列
-        """
-        self._alpha_str=str
-
-    def set_alpha_color(self, color ):
-        """
-        ガイドテキストの色を設定する
-
-        Parameters
-        -------------
-        color : String
-            ガイドテキストに設定する色(指定形式はTkinterと同様)
-        """
-        self._alpha_color=color
-
-    def configure(self, **kwargs):
-        self._entry.configure(kwargs)
-
-    def bind(self, *args):
-        self._entry.bind(*args)
-
-    def pack(self, **kwargs):
-        self._fg_color=self._entry.cget("fg")
-        self._entry.pack(kwargs)
-
-        def _mode_init(e):
-            self._entry.icursor(0)
-            self._entry.bind("<KeyPress>", _mode_wait)
-
-        def _mode_wait(e):
-            self._strv.set("")
-            self._entry.configure(fg=self._fg_color)
-            self._entry.unbind("<KeyPress>")
-            self._entry.unbind("<ButtonRelease>")
-            self._entry.bind("<KeyRelease>", _mode_enter)
-
-
-        def _mode_enter(e):
-            if self._strv.get() == "":
-                self._entry.configure(fg=self._alpha_color)
-                self._strv.set(self._alpha_str)
-                self._entry.icursor(0)
-                self._entry.bind("<KeyPress>", _mode_wait)
-                self._entry.bind("<ButtonRelease>", _mode_init)
-
-        if ( self._strv.get() == "" ):
-            self._entry.config(fg=self._alpha_color)
-            self._strv.set(self._alpha_str)
-            self._entry.bind("<ButtonRelease>", _mode_init)
-        else:
-            self._entry.bind("<KeyRelease>", _mode_enter)
-
-#スクロールすることができるフレーム
-class ScrolFrame(tk.Frame):
-
-    def __init__(self, master=None, **kwargs):
-        super().__init__(master)
-        self._outframe=tk.Frame(master)
-        self._canvas = tk.Canvas(self._outframe,bg="khaki2")
-        self._inframe = tk.Frame(self._canvas, kwargs, pady = 10, bg="khaki2")
-        self._scrollbar_y = tk.Scrollbar(self._outframe, orient=tk.VERTICAL, command=self._canvas.yview)
-
-        self._inframe.bind("<Configure>", self._adjust)
-        self._outframe.bind("<Map>", self._adjust)
-        self._inframe.bind("<MouseWheel>", self._mouse_y_scroll)
-        self._canvas.create_window(0,0,window = self._inframe, anchor="c", )
-        self._canvas.config(yscrollcommand=self._scrollbar_y.set)
-
-        self._canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-        self._scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-
-    def _adjust(self, e):
-        maxw, maxh = 0, 0
-        self._canvas.configure(scrollregion=self._canvas.bbox("all"))
-        for w in self._inframe.winfo_children():
-            maxw = max(maxw, w.winfo_width())
-        if ( maxw == 0 ):
-            maxw = 200
-        self._canvas.configure(width=maxw)
-
-    def _mouse_y_scroll(self, event):
-        if event.delta > 0:
-            self._canvas.yview_scroll(-1, 'units')
-        elif event.delta < 0:
-            self._canvas.yview_scroll(1, 'units')
-
-    #canvasの設定変更
-    def canvas_config(self, **kwargs):
-        self._canvas.configure(kwargs)
-
-    #outframeの設定変更
-    def outframe_config(self, **kwargs):
-        self._outframe.configure(kwargs)
-
-    #含めるwidgetの親となるframeを返す
-    def get(self):
-        return self._inframe
-
-    def pack(self, **kwargs):
-        self._outframe.pack(kwargs)
-
-    def grid(self, **kwargs):
-        self._outframe.grid(kwargs)
-
-    def pack_widget(self, widget, **kwargs):
-        widget.bind("<MouseWheel>", self._mouse_y_scroll)
-        widget.pack(kwargs)
-
 
 #詳細画面クラス
 class DetailWindow:
@@ -342,18 +170,18 @@ class DetailWindow:
         #frame設定
         name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], bd = 3, relief = tk.GROOVE)
         memo_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5)
-        commands_frame = tk.Frame(self._win, bg=self._colors["bg_front"],  bd = 3)
+        commands_frame = tk.Frame(self._win, bg=self._colors["bg_back"],  bd = 3, padx=10)
         kadai_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5)
 
         #frame配置
         name_frame.pack( ipadx = 20, fill = tk.X)
         memo_frame.pack( fill = tk.X)
-        commands_frame.pack( side=tk.BOTTOM, fill = tk.X)
+        commands_frame.pack( side=tk.BOTTOM, fill = tk.X, ipadx = 10)
         kadai_frame.pack( expand = True, fill = tk.BOTH)
 
         #name_frame内
         l_title = tk.Label(name_frame, text="科目名:", bg = self._colors["bg_front"], font = ("", 15, "bold"))
-        en_name = GuideEntry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=1)
+        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=1)
         en_name.insert(self._subject.get_name())
         en_name.bind("<Return>", _focus_out)
         en_name.set_alpha_color("light sky blue")
@@ -362,7 +190,7 @@ class DetailWindow:
         en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 2)
 
         #memo_frame内
-        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32_white.png")
+        self._imgs["l_memo_title"]=tk.PhotoImage(file="./icon/ico_memo_32_white.png")
         l_memo_title = tk.Label(memo_frame, text="memo", bg = self._colors["bg_back"], fg = self._colors["fg_memo_title"], font = ("Century", 12), image=self._imgs["l_memo_title"], compound="left")
         txb_memo = tk.Text(memo_frame, fg="ghostwhite", bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID)
         txb_memo.insert(tk.END, self._subject.get_memo())
@@ -371,28 +199,22 @@ class DetailWindow:
         txb_memo.pack(side=tk.BOTTOM, anchor=tk.SW, fill=tk.X, padx = 5, pady= 2)
 
         #kadai_frame内
-        self._imgs["l_kadai_title"]=tk.PhotoImage(file="./image/detail_window/ico_asig_title_32_black.png")
-        self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./image/detail_window/ico_announce_16_white.png")
-        self._imgs["bt_add_asig"]=tk.PhotoImage(file="./image/detail_window/ico_add_asig_32_white.png")
-        self._imgs["dummy"]=tk.PhotoImage(file="./image/detail_window/ico_toumei_32.png")
+        self._imgs["l_kadai_title"]=tk.PhotoImage(file="./icon/ico_asig_title_32_black.png")
+        self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./icon/ico_announce_16_white.png")
+        self._imgs["dummy"]=tk.PhotoImage(file="./icon/ico_toumei_32.png")
         l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=3, font=("HGSｺﾞｼｯｸE", 15), relief = tk.GROOVE, image=self._imgs["l_kadai_title"], compound="left")
         l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg="ghostwhite",bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3)
         asig_frame=tk.Frame(kadai_frame, bg=self._colors["bg_back"])
-        sf_kadai= ScrolFrame(asig_frame)
+        sf_kadai= cw.ScrollFrame(asig_frame)
 
         def _add_asig():
             tmp = tk.Button(sf_kadai.get(), text="追加された課題", bg="Medium purple1")
             sf_kadai.pack_widget(tmp, pady=5)
 
-        bt_dummy = tk.Button(asig_frame, bg = self._colors["bg_back"], image=self._imgs["dummy"], bd=0,state="disable")
-        bt_add_asig = tk.Button(asig_frame, bg = "grey19", image=self._imgs["bt_add_asig"], command=_add_asig, bd=3, relief=tk.RAISED)
-
         l_kadai_title.pack(fill = tk.X)
         l_kadai_announce.pack()
         asig_frame.pack( anchor=tk.CENTER, expand=True, fill=tk.Y)
-        bt_dummy.pack(side=tk.LEFT, anchor=tk.N)
         sf_kadai.pack(side=tk.LEFT,expand=True, fill=tk.Y)
-        bt_add_asig.pack(side=tk.LEFT, anchor=tk.N, pady=5)
 
         #保存ボタンの関数
         def _restore():
@@ -405,12 +227,18 @@ class DetailWindow:
             _focus_out()
 
         #commands_frame内
-        self._imgs["bt_restore"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_white.png")
-        bt_restore_frame=tk.Frame( commands_frame, bg = "black", relief=tk.RAISED, pady = 3, padx=3, bd=4)
-        bt_restore=tk.Button(bt_restore_frame, text="保存", bg="black", fg="ghostwhite", command=_restore, image=self._imgs["bt_restore"], compound="top", bd=0)
+        self._imgs["bt_add_asig"]=tk.PhotoImage(file="./icon/ico_add_asigh_32_grey.png")
+        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./icon/ico_add_asigh_32_white.png")
+        self._imgs["bt_restore"] = tk.PhotoImage(file="./icon/ico_restore_32_grey.png")
+        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./icon/ico_restore_32_white.png")
+        bt_restore=cw.GuideButton( commands_frame, bg=commands_frame.cget("bg"), fg="ghostwhite", command=_restore, image=self._imgs["bt_restore"], compound="top", bd=0, cursor="hand2", activebackground=commands_frame.cget("bg"))
+        bt_restore.config_selected(image=self._imgs["bt_restore_selected"])
+        bt_add_asig = cw.GuideButton(commands_frame, bg = "grey19", image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
+        bt_add_asig.config_selected(image=self._imgs["bt_add_asig_selected"])
 
-        bt_restore_frame.pack(side=tk.LEFT)
-        bt_restore.pack()
+        # bt_restore_frame.pack(side=tk.LEFT)
+        bt_restore.pack(side=tk.LEFT, padx=10)
+        bt_add_asig.pack(side=tk.LEFT, padx=10)
 
     #windowの削除
     def _destory(self):
@@ -459,7 +287,7 @@ if __name__ == "__main__":
     but1.pack()
     but2 = tk.Button(root, text = "Subject取得", command=func)
     but2.pack()
-    myen = GuideEntry(root)
+    myen = cw.GuideEntry(root)
     myen.set_alpha_str("科目名")
     myen.bind("<Return>", func5)
     myen.pack()
