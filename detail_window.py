@@ -19,6 +19,7 @@ class DetailWindow:
             get: subjectインスタンスを返す
     set_subject: subjectインスタンスを設定する
        set_func: 詳細ウィンドウ内のイベント関数を設定する
+        set_pos: 詳細ウィンドウの展開位置を設定する
        del_func: 設定されたイベントを削除する
     show_window: 詳細ウィンドウを展開する
     """
@@ -39,7 +40,8 @@ class DetailWindow:
         self._win = None
         self._imgs = {}
         self._funcs={}
-
+        self._x = 100
+        self._y = 100
         self._colors = { "bg_front":"Medium purple", "bg_back":"grey19", "bg_en":"grey19", "fg_memo_title":"ghostwhite", "en_insertbg":"ghostwhite"}
 
         self.list=[]
@@ -116,6 +118,22 @@ class DetailWindow:
         """
         self._funcs[cmd] = partial(func, *args)
 
+    def set_pos(self, x = None, y = None):
+        """
+        詳細ウィンドウの展開位置を設定する
+
+        Parameters
+        -------------
+        x: int
+            ウィンドウを展開するx座標
+        y: int
+            ウィンドウを展開するy座標
+        """
+        if x != None:
+            self._x = x
+        if y != None:
+            self._y = y
+
     def del_func(cmd):
         """
         設定されたイベントを削除する
@@ -141,6 +159,7 @@ class DetailWindow:
         """
         if has == None:
             has = tk.BooleanVar(value=True)
+
         def _protocol():
             has.set(False)
             if "window_closed" in self._funcs:
@@ -164,15 +183,14 @@ class DetailWindow:
         self._win = tk.Toplevel(self.root)
         self._win.withdraw()
         self._win.title("SubWindow")
-        self._win.geometry(f"400x700+100+100")
+        self._win.geometry(f"400x700+{self._x}+{self._y}")
         self._win.attributes("-topmost", True)
-
+        self._win.bind("<Destroy>", self._rest_pos, "+")
         #frame設定
         name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], bd = 3, relief = tk.GROOVE)
         memo_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5)
         commands_frame = tk.Frame(self._win, bg=self._colors["bg_back"],  bd = 3, padx=10)
         kadai_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5)
-
         #frame配置
         name_frame.pack( ipadx = 20, fill = tk.X)
         memo_frame.pack( fill = tk.X)
@@ -246,6 +264,12 @@ class DetailWindow:
             self._win.destroy()
             self._win = None
 
+    def _rest_pos(self, e=None):
+        if self._win != None:
+            self._x=self._win.winfo_x()
+            self._y=self._win.winfo_y()
+
+
 if __name__ == "__main__":
 
     root = tk.Tk()
@@ -275,9 +299,10 @@ if __name__ == "__main__":
     def func4():
         print("press restore")
 
-    def func5(e):
-        print("focus out")
-        root.focus_set()
+    def func5():
+        print(f"x,y = {dw._x}, {dw._y}")
+        print(f"x,y == {dw._win.winfo_x()}, {dw._win.winfo_y()}")
+
 
     dw.set_func("window_closed", func3)
     dw.set_func("on_restore", func4)
@@ -287,10 +312,8 @@ if __name__ == "__main__":
     but1.pack()
     but2 = tk.Button(root, text = "Subject取得", command=func)
     but2.pack()
-    myen = cw.GuideEntry(root)
-    myen.set_alpha_str("科目名")
-    myen.bind("<Return>", func5)
-    myen.pack()
+    but3 = tk.Button(root, text="座標取得", command=func5)
+    but3.pack()
 
     root.mainloop()
     print(has.get())
