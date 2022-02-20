@@ -190,7 +190,7 @@ class DetailWindow:
         en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 2)
 
         #memo_frame内
-        self._imgs["l_memo_title"]=tk.PhotoImage(file="./icon/ico_memo_32_white.png")
+        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32_white.png")
         l_memo_title = tk.Label(memo_frame, text="memo", bg = self._colors["bg_back"], fg = self._colors["fg_memo_title"], font = ("Century", 12), image=self._imgs["l_memo_title"], compound="left")
         txb_memo = tk.Text(memo_frame, fg="ghostwhite", bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID)
         txb_memo.insert(tk.END, self._subject.get_memo())
@@ -199,9 +199,9 @@ class DetailWindow:
         txb_memo.pack(side=tk.BOTTOM, anchor=tk.SW, fill=tk.X, padx = 5, pady= 2)
 
         #kadai_frame内
-        self._imgs["l_kadai_title"]=tk.PhotoImage(file="./icon/ico_asig_title_32_black.png")
-        self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./icon/ico_announce_16_white.png")
-        self._imgs["dummy"]=tk.PhotoImage(file="./icon/ico_toumei_32.png")
+        self._imgs["l_kadai_title"]=tk.PhotoImage(file="./image/detail_window/ico_asig_title_32_black.png")
+        self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./image/detail_window/ico_announce_16_white.png")
+        self._imgs["dummy"]=tk.PhotoImage(file="./image/detail_window/ico_toumei_32.png")
         l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=3, font=("HGSｺﾞｼｯｸE", 15), relief = tk.GROOVE, image=self._imgs["l_kadai_title"], compound="left")
         l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg="ghostwhite",bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3)
         asig_frame=tk.Frame(kadai_frame, bg=self._colors["bg_back"])
@@ -227,10 +227,10 @@ class DetailWindow:
             _focus_out()
 
         #commands_frame内
-        self._imgs["bt_add_asig"]=tk.PhotoImage(file="./icon/ico_add_asigh_32_grey.png")
-        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./icon/ico_add_asigh_32_white.png")
-        self._imgs["bt_restore"] = tk.PhotoImage(file="./icon/ico_restore_32_grey.png")
-        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./icon/ico_restore_32_white.png")
+        self._imgs["bt_add_asig"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_grey.png")
+        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_white.png")
+        self._imgs["bt_restore"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_grey.png")
+        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_white.png")
         bt_restore=cw.GuideButton( commands_frame, bg=commands_frame.cget("bg"), fg="ghostwhite", command=_restore, image=self._imgs["bt_restore"], compound="top", bd=0, cursor="hand2", activebackground=commands_frame.cget("bg"))
         bt_restore.config_selected(image=self._imgs["bt_restore_selected"])
         bt_add_asig = cw.GuideButton(commands_frame, bg = "grey19", image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
