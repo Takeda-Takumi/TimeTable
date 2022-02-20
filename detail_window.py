@@ -4,38 +4,122 @@ import subject as sb
 
 from functools import partial
 
-class myclass:
-    def __init__(self, v):
-        self.v = v
+class GuideEntry(tk.Entry):
+    """
+    GideEntry
+        Guide付き Entryを生成するクラス
+        (未入力の際にガイドテキストを表示する)
 
-class MyEntry(tk.Entry):
+    ----------------
+    関数リファレンス
+
+    get             : Entry内のテキストを取得する
+    insert          : Entryにテキストを挿入する
+    set_alpha_str   : ガイドテキストを設定する
+    set_alpha_color : ガイドテキストの色を設定する
+    ----以下の関数はEntryのメンバ関数と同様---------
+    configure
+    bind
+    pack
+    """
+
     def __init__(self, master=None, **kwargs):
+        """
+        初期化関数
+
+        Notes
+        -------------
+        オプションなどはEntryの初期化と同様
+        """
         super().__init__(master)
-        self._alpha_str = "科目名"
-        self._alpha_color="lightskyblue"
+        self._alpha_str = ""
+        self._alpha_color= "SystemWindowText"
         self._entry = tk.Entry(master, kwargs)
-        # self.entry=tk.Entry(master, kwargs)
+        self._strv = tk.StringVar(value= "")
+        self._entry.configure(textvariable = self._strv)
+
+    def get(self):
+        """
+        Entry内のテキストを取得する
+
+        Returns
+        -------------
+        text : String
+            Entry内のテキスト
+        """
+        if ( self._strv.get() == self._alpha_str):
+            return ""
+        return self._strv.get()
+
+    def insert(self, str):
+        """
+        Entry内にテキストを挿入する
+
+        Parameters
+        -------------
+        str : String
+            Entry内に挿入するテキスト
+        """
+        self._strv.set(str)
+
+    def set_alpha_str(self, str):
+        """
+        ガイドテキストの文字列を設定する
+
+        Parameters
+        -------------
+        str : String
+            ガイドテキストに設定する文字列
+        """
+        self._alpha_str=str
+
+    def set_alpha_color(self, color ):
+        """
+        ガイドテキストの色を設定する
+
+        Parameters
+        -------------
+        color : String
+            ガイドテキストに設定する色(指定形式はTkinterと同様)
+        """
+        self._alpha_color=color
+
+    def configure(self, **kwargs):
+        self._entry.configure(kwargs)
+
+    def bind(self, *args):
+        self._entry.bind(*args)
 
     def pack(self, **kwargs):
         self._fg_color=self._entry.cget("fg")
         self._entry.pack(kwargs)
 
-        def func(e):
-            print("func")
-            # self._entry.delete(0,tk.END)
-            # self._entry.insert(0, self._alpha_str)
+        def _mode_init(e):
             self._entry.icursor(0)
-            self._entry.bind("<KeyPress>", func2)
+            self._entry.bind("<KeyPress>", _mode_wait)
 
-        def func2(e):
-            print("func2")
-            self._entry.delete(0, tk.END)
+        def _mode_wait(e):
+            self._strv.set("")
+            self._entry.configure(fg=self._fg_color)
             self._entry.unbind("<KeyPress>")
+            self._entry.unbind("<ButtonRelease>")
+            self._entry.bind("<KeyRelease>", _mode_enter)
 
-        if super().get() == "":
+
+        def _mode_enter(e):
+            if self._strv.get() == "":
+                self._entry.configure(fg=self._alpha_color)
+                self._strv.set(self._alpha_str)
+                self._entry.icursor(0)
+                self._entry.bind("<KeyPress>", _mode_wait)
+                self._entry.bind("<ButtonRelease>", _mode_init)
+
+        if ( self._strv.get() == "" ):
             self._entry.config(fg=self._alpha_color)
-            self._entry.insert(0, self._alpha_str)
-            self._entry.bind("<ButtonRelease>", func)
+            self._strv.set(self._alpha_str)
+            self._entry.bind("<ButtonRelease>", _mode_init)
+        else:
+            self._entry.bind("<KeyRelease>", _mode_enter)
 
 #スクロールすることができるフレーム
 class ScrolFrame(tk.Frame):
@@ -243,6 +327,10 @@ class DetailWindow:
 
     #windowを展開
     def _make_window(self):
+
+        def _focus_out(*args):
+            l_kadai_title.focus()
+
         if self.has_window():
             self._destory()
         self._win = tk.Toplevel(self.root)
@@ -262,14 +350,15 @@ class DetailWindow:
         memo_frame.pack( fill = tk.X)
         commands_frame.pack( side=tk.BOTTOM, fill = tk.X)
         kadai_frame.pack( expand = True, fill = tk.BOTH)
-        # commands_frame.pack( side=tk.BOTTOM, expand = True, fill = tk.BOTH, ipadx = 3)
 
         #name_frame内
         l_title = tk.Label(name_frame, text="科目名:", bg = self._colors["bg_front"], font = ("", 15, "bold"))
-        en_name = tk.Entry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=3)
-        en_name.insert(0, self._subject.get_name())
+        en_name = GuideEntry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=1)
+        en_name.insert(self._subject.get_name())
+        en_name.bind("<Return>", _focus_out)
+        en_name.set_alpha_color("light sky blue")
+        en_name.set_alpha_str("科目名")
 
-        l_title.pack(side=tk.LEFT, padx = 5, pady=3)
         en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 2)
 
         #memo_frame内
@@ -315,9 +404,6 @@ class DetailWindow:
                 self._funcs["on_restore"]()
             _focus_out()
 
-        def _focus_out():
-            l_kadai_title.focus()
-
         #commands_frame内
         self._imgs["bt_restore"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_white.png")
         bt_restore_frame=tk.Frame( commands_frame, bg = "black", relief=tk.RAISED, pady = 3, padx=3, bd=4)
@@ -361,6 +447,10 @@ if __name__ == "__main__":
     def func4():
         print("press restore")
 
+    def func5(e):
+        print("focus out")
+        root.focus_set()
+
     dw.set_func("window_closed", func3)
     dw.set_func("on_restore", func4)
 
@@ -369,8 +459,9 @@ if __name__ == "__main__":
     but1.pack()
     but2 = tk.Button(root, text = "Subject取得", command=func)
     but2.pack()
-    myen = MyEntry(root, fg="yellow")
-    myen._bg_str="検索"
+    myen = GuideEntry(root)
+    myen.set_alpha_str("科目名")
+    myen.bind("<Return>", func5)
     myen.pack()
 
     root.mainloop()
