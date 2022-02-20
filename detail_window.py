@@ -1,10 +1,143 @@
 import tkinter as tk
 import tkinter.font as f
-
+from tkinter import ttk
+from datetime import datetime
 import subject as sb
 import custom_widgets as cw
 
 from functools import partial
+
+# 課題入力用クラス
+class InputAssignment:
+    def __init__(self):
+        self.name = "nononono"
+        self.deadline = ""
+    
+    def make_window(self):
+
+        default_name = "最適化レポート"
+        # default_deadline = "2022/12/08/12/34"
+
+        ass_win = tk.Tk()
+        ass_win.geometry("650x150")
+        ass_win.title("課題追加")
+        ass_win.option_add("*Font","bold 20")
+        ass_win.lift()
+        ass_win.attributes("-topmost",True)
+
+        # 課題名用フレーム
+        frame_name=tk.Frame(ass_win)
+        # frame_name=tk.Frame(ass_win,relief='solid',background="red")
+        frame_name.pack(side="top",fill='both', expand=True)
+
+        # 課題名ラベル
+        label_name = tk.Label(frame_name)
+        label_name.config(text = "課題名:")
+        label_name.pack(side='left')
+
+        # 課題名入力
+        ent_name = tk.Entry(frame_name)
+        ent_name.insert(0,default_name)
+
+        def clear(event):
+            if ent_name.get() == default_name:
+                ent_name.delete(0,len(ent_name.get()))
+                
+        ent_name.bind("<Button-1>",clear)
+        ent_name.pack(side="left")
+
+        # 期限用フレーム
+        frame_deadline=tk.Frame(ass_win)
+        frame_deadline.pack(side="top",fill='both', expand=True)
+
+        # 期限ラベル
+        label_deadline = tk.Label(frame_deadline)
+        label_deadline.config(text = "提出期限:")
+        label_deadline.pack(side="left")
+
+        # 期限入力用combobox
+        year_values=[i for i in range(2022, 3000)]
+        month_values=[i for i in range(1, 13)]
+        date_values=[i for i in range(1, 32)]
+        hour_values=[i for i in range(0, 24)]
+        second_values=[i for i in range(1, 60)]
+        
+        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values)
+        year_combobox.current(0)
+        year_combobox.pack(side="left")
+        year_combobox.pack()
+
+        label_year = tk.Label(frame_deadline)
+        label_year.config(text = "年")
+        label_year.pack(side="left")
+        label_year.pack()
+
+        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values)
+        month_combobox.current(0)
+        month_combobox.pack(side="left")
+        month_combobox.pack()
+
+        label_month = tk.Label(frame_deadline)
+        label_month.config(text = "月")
+        label_month.pack(side="left")
+        label_month.pack()
+
+        date_combobox = ttk.Combobox(frame_deadline,width=2,values=date_values)
+        date_combobox.current(0)
+        date_combobox.pack(side="left")
+        date_combobox.pack()
+
+        label_date = tk.Label(frame_deadline)
+        label_date.config(text = "日")
+        label_date.pack(side="left")
+        label_date.pack()
+
+        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values)
+        hour_combobox.current(len(hour_values)-1)
+        hour_combobox.pack(side="left")
+        hour_combobox.pack()
+
+        label_hour = tk.Label(frame_deadline)
+        label_hour.config(text = "時")
+        label_hour.pack(side="left")
+        label_hour.pack()
+
+        second_combobox = ttk.Combobox(frame_deadline,width=2,values=second_values)
+        second_combobox.current(len(second_values)-1)
+        second_combobox.pack(side="left")
+        second_combobox.pack()
+
+        label_second = tk.Label(frame_deadline)
+        label_second.config(text = "分")
+        label_second.pack(side="left")
+        label_second.pack()
+
+
+        def buttonclicked():
+            _name = ent_name.get()
+            # assignment.set_name(_name)
+            self.name=_name
+            year = year_combobox.get()
+            month = month_combobox.get()
+            date = date_combobox.get()
+            hour = hour_combobox.get()
+            second = second_combobox.get()
+            print("year,month,date,hour,second",year,month,date,hour,second)
+
+            print("_name",_name)
+            print("self.name",self.name)
+            # return 
+            ass_win.destroy()
+
+        # 完了ボタン
+        ok_button = tk.Button(frame_deadline,text = "OK",relief="groove",overrelief="raised",command=buttonclicked)
+        ok_button.pack(side="right")
+
+    #     assignment = sb.Assignment()
+    # assignment.set_name("数値計算_第２回レポート")
+    # assignment.set_deadline(2022,8,8,12,34)
+        ass_win.mainloop()
+
 
 #詳細画面クラス
 class DetailWindow:
@@ -226,6 +359,11 @@ class DetailWindow:
         sf_kadai= cw.ScrollFrame(asig_frame)
 
         def _add_asig():
+
+            ias=InputAssignment()
+            ias.make_window()
+            print(ias.name)
+            
             tmp = tk.Button(sf_kadai.get(), text="追加された課題", bg="Medium purple1")
             sf_kadai.pack_widget(tmp, pady=5)
 
