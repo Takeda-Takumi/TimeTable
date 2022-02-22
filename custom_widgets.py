@@ -1,5 +1,4 @@
 import tkinter as tk
-import re
 
 #keys, configure関数必須
 class RestoreConfigure:
@@ -113,10 +112,15 @@ class GuideEntry(tk.Entry):
         -------------
         オプションなどはEntryの初期化と同様
         """
-        super().__init__(master)
-        self._alpha_str = ""
-        self._alpha_color= "SystemWindowText"
+        if "name" in kwargs:
+            super().__init__(master, name=kwargs["name"])
+            del kwargs["name"]
+        else:
+            super().__init__(master)
         self._entry = tk.Entry(master, kwargs)
+        self._alpha_str = tk.StringVar("")
+        self._alpha_color=self._entry.cget("fg")
+        self._defo_color=self._entry.cget("fg")
         self._strv = tk.StringVar(value= "")
         self._entry.configure(textvariable = self._strv)
 
@@ -129,8 +133,6 @@ class GuideEntry(tk.Entry):
         text : String
             Entry内のテキスト
         """
-        if ( self._strv.get() == self._alpha_str):
-            return ""
         return self._strv.get()
 
     def insert(self, str):
@@ -143,6 +145,7 @@ class GuideEntry(tk.Entry):
             Entry内に挿入するテキスト
         """
         self._strv.set(str)
+        self._init()
 
     def set_alpha_str(self, str):
         """
@@ -153,7 +156,8 @@ class GuideEntry(tk.Entry):
         str : String
             ガイドテキストに設定する文字列
         """
-        self._alpha_str=str
+        self._alpha_str.set(str)
+        self._init()
 
     def set_alpha_color(self, color ):
         """
@@ -165,50 +169,54 @@ class GuideEntry(tk.Entry):
             ガイドテキストに設定する色(指定形式はTkinterと同様)
         """
         self._alpha_color=color
+        self._init()
 
     def configure(self, **kwargs):
         self._entry.configure(kwargs)
+        self._init()
 
     def bind(self, *args):
         self._entry.bind(*args)
 
     def pack(self, **kwargs):
-        self._fg_color=self._entry.cget("fg")
+        self._init()
         self._entry.pack(kwargs)
 
-        def _mode_init(e):
-            self._entry.icursor(0)
-            self._entry.bind("<KeyPress>", _mode_wait)
-
-        def _mode_wait(e):
-            self._strv.set("")
-            self._entry.configure(fg=self._fg_color)
-            self._entry.unbind("<KeyPress>")
-            self._entry.unbind("<ButtonRelease>")
-            self._entry.bind("<KeyRelease>", _mode_enter)
-
-
-        def _mode_enter(e):
-            if self._strv.get() == "":
-                self._entry.configure(fg=self._alpha_color)
-                self._strv.set(self._alpha_str)
-                self._entry.icursor(0)
-                self._entry.bind("<KeyPress>", _mode_wait)
-                self._entry.bind("<ButtonRelease>", _mode_init)
-
-        if ( self._strv.get() == "" ):
-            self._entry.config(fg=self._alpha_color)
-            self._strv.set(self._alpha_str)
-            self._entry.bind("<ButtonRelease>", _mode_init)
+    def _init(self):
+        if ( self._strv.get() != ""):
+            self._mode_wait()
         else:
-            self._entry.bind("<KeyRelease>", _mode_enter)
+            self._mode_init()
 
+    def _mode_init(self, e=None):
+        def func(e):
+            self._entry.icursor(0)
+
+        self._entry.bind("<KeyPress>", self._mode_wait)
+        self._entry.config(textvariable=self._alpha_str, fg=self._alpha_color)
+        self._entry.bind("<ButtonRelease>", func)
+
+    def _mode_wait(self, e=None):
+
+        def func(e):
+            if self._strv.get() == "":
+                self._entry.unbind("<KeyRelease>")
+                self._mode_init()
+
+        self._entry.configure(fg=self._defo_color, textvariable=self._strv)
+        self._entry.unbind("<KeyPress>")
+        self._entry.unbind("<ButtonRelease>")
+        self._entry.bind("<KeyRelease>", func)
 
 #スクロールすることができるフレーム
 class ScrollFrame(tk.Frame):
 
     def __init__(self, master=None, **kwargs):
-        super().__init__(master)
+        if "name" in kwargs:
+            super().__init__(master, name=kwargs["name"])
+            del kwargs["name"]
+        else:
+            super().__init__(master)
         self._outframe=tk.Frame(master)
         self._canvas = tk.Canvas(self._outframe,bg="khaki2")
         self._inframe = tk.Frame(self._canvas, kwargs, pady = 10, bg="khaki2")
@@ -354,16 +362,16 @@ if __name__ == "__main__":
     root.title("Main Window")
     root.geometry("300x200")
 
-    def func():
-        print("gb_selected=", gb._selected)
-        gb.set_switch(True)
+    ge = GuideEntry(root)
+    ge.set_alpha_str("科目名")
+    ge.set_alpha_color("red")
+    ge.insert("最適化")
+    ge.pack()
 
-    gb = GuideButton(root, text="Guide Button", command=func)
-    gb.config_selected(bg="Khaki2")
-    gb.config_default(bg="Medium purple1", fg="ghostwhite")
-    gb.set_switch(False)
-    gb.pack(side=tk.LEFT)
+    bt1 = tk.Button(root, text="Button1", command= lambda : { ge.set_alpha_color("Khaki2")})
+    bt1.pack()
+    bt2 = tk.Button(root, text="Button2", command= lambda : print("text=", ge.get()))
+    bt2.pack()
 
-
-    gb.config_selected(command=func)
+    print(root.children)
     root.mainloop()
