@@ -33,7 +33,7 @@ class Subject:
         self._asg_num = 0
 
     # 課題の数を１つ増やす
-    def add_asg(self, assignment):
+    def add_asg(self, assignment = Assignment()):
         self._assignments.append(assignment)
         self._asg_num += 1
 
