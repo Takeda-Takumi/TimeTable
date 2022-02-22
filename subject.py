@@ -4,9 +4,9 @@
 from datetime import datetime
 
 class Assignment:
-    def __init__(self):
-        self._name = ""
-        self._deadline = datetime.max
+    def __init__(self, name="", deadline=datetime.max):
+        self._name = name
+        self._deadline = deadline
 
     # 課題名を設定する
     def set_name(self, name):
@@ -22,6 +22,8 @@ class Assignment:
     def get_deadline(self):
         return self._deadline
 
+    def __str__(self):
+        return f"name={self._name} deadline={str(self._deadline)}"
 
 class Subject:
     def __init__(self):
@@ -31,8 +33,8 @@ class Subject:
         self._asg_num = 0
 
     # 課題の数を１つ増やす
-    def add_asg(self):
-        self._assignments.append(Assignment())
+    def add_asg(self, assignment):
+        self._assignments.append(assignment)
         self._asg_num += 1
 
     # id番目の課題を削除する（[a, b, c]の中から2番目=bを削除すると[a, c]になる）
@@ -47,7 +49,7 @@ class Subject:
 
     def get_name(self):
         return self._name
-    
+
     def set_memo(self, memo):
         self._memo = memo
 
