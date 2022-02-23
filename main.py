@@ -2,6 +2,7 @@
 import tkinter as tk
 from datetime import datetime
 import shelve #ファイル保存に関わるライブラリ
+import os # ファイルの存在確認に関わるライブラリ
 
 # 別ファイルのインポート
 import detail_window as dw
@@ -24,6 +25,9 @@ class Application(tk.Frame):
                 self.widgets[6*i+j].set_button_func(self.button_func, self.widgets[6*i+j])
                 # ウィジェットのボタンを配置
                 self.widgets[6*i+j].set_grid(j+1, i+1)
+
+        if os.path.isfile("timetable.shelve.bak"): # 既に保存したデータがある場合、起動時にデータをロードする
+            self.load_timetable()
 
         self.create_timetable()
         self.input_test_data()
