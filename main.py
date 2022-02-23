@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import tkinter as tk
 from datetime import datetime
+import shelve #ファイル保存に関わるライブラリ
 
 # 別ファイルのインポート
 import detail_window as dw
@@ -75,6 +76,9 @@ class Application(tk.Frame):
                     else:
                         widget.set_color("#E74C3C") # 3日以内なら赤
 
+        self.save_timetable()
+        self.load_timetable()
+
     # detail_windowが閉じたときに_dw_is_openとテキスト、色を更新する関数
     def dw_close(self):
         self._dw_is_open = False
@@ -138,6 +142,16 @@ class Application(tk.Frame):
         label.grid(column=0, row=5)
         label = tk.Label(text="6", width = 14, height = 5)
         label.grid(column=0, row=6)
+
+    def save_timetable(self):
+        with shelve.open("timetable.shelve",) as file:
+            for i in range(len(self.widgets)):
+                file[str(i)] = self.widgets[i].get_subject()
+
+    def load_timetable(self):
+        with shelve.open("timetable.shelve",) as file:
+            for i in range(len(self.widgets)):
+                self.widgets[i].set_subject(file[str(i)])
 
 
 
