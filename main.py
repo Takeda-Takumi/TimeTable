@@ -2,6 +2,7 @@
 import tkinter as tk
 from datetime import datetime
 import shelve #ファイル保存に関わるライブラリ
+import os # ファイルの存在確認に関わるライブラリ
 
 # 別ファイルのインポート
 import detail_window as dw
@@ -13,7 +14,7 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.master.geometry("800x600")
         self.master.title("TimeTable")
-        self._detail_window = None # DetailWindow型の変数
+        self._detail_window = dw.DetailWindow(self) # DetailWindow型の変数
         self._dw_is_open = False # _detail_windowがすでに開いてるかどうかの変数
 
         # ウィジェットを作成
@@ -25,6 +26,9 @@ class Application(tk.Frame):
                 # ウィジェットのボタンを配置
                 self.widgets[6*i+j].set_grid(j+1, i+1)
 
+        if os.path.isfile("timetable.shelve.bak"): # 既に保存したデータがある場合、起動時にデータをロードする
+            self.load_timetable()
+
         self.create_timetable()
         self.input_test_data()
 
@@ -33,7 +37,7 @@ class Application(tk.Frame):
     def button_func(self, widget):
         if not self._dw_is_open:
             self._dw_is_open = True
-            self._detail_window = dw.DetailWindow(self, widget.get_subject())
+            self._detail_window.set_subject(widget.get_subject())
             self._detail_window.set_func("window_closed", self.dw_close)
             self._detail_window.set_func("on_restore", self.change_text_and_color)
             self._detail_window.show_window()
