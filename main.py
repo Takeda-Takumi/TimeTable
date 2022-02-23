@@ -33,7 +33,6 @@ class Application(tk.Frame):
     def button_func(self, widget):
         if not self._dw_is_open:
             self._dw_is_open = True
-            # self._detail_window = dw.DetailWindow(self, widget.get_subject())
             self._detail_window.set_subject(widget.get_subject())
             self._detail_window.set_func("window_closed", self.dw_close)
             self._detail_window.set_func("on_restore", self.change_text_and_color)
