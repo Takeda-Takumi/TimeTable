@@ -58,3 +58,6 @@ class Widget(tk.Button):
     # _subjectの課題の中で最も近い締切日を返す
     def get_subj_close_asg_deadline(self):
         return self._subject.get_close_asg_deadline()
+
+if __name__ == "__main__":
+    pass
