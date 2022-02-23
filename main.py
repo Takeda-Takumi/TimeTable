@@ -28,15 +28,10 @@ class Application(tk.Frame):
         self.create_timetable()
         self.input_test_data()
 
-        self.save_timetable()
-        self.load_timetable()
-
 
     # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
     def button_func(self, widget):
         if not self._dw_is_open:
-            if(widget.get_subject().get_asg_num() > 0):
-                print(widget.get_subject()._assignments[0].get_name())
             self._dw_is_open = True
             self._detail_window = dw.DetailWindow(self, widget.get_subject())
             self._detail_window.set_func("window_closed", self.dw_close)
