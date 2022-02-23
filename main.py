@@ -13,7 +13,7 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.master.geometry("800x600")
         self.master.title("TimeTable")
-        self._detail_window = None # DetailWindow型の変数
+        self._detail_window = dw.DetailWindow(self) # DetailWindow型の変数
         self._dw_is_open = False # _detail_windowがすでに開いてるかどうかの変数
 
         # ウィジェットを作成
@@ -33,7 +33,8 @@ class Application(tk.Frame):
     def button_func(self, widget):
         if not self._dw_is_open:
             self._dw_is_open = True
-            self._detail_window = dw.DetailWindow(self, widget.get_subject())
+            # self._detail_window = dw.DetailWindow(self, widget.get_subject())
+            self._detail_window.set_subject(widget.get_subject())
             self._detail_window.set_func("window_closed", self.dw_close)
             self._detail_window.set_func("on_restore", self.change_text_and_color)
             self._detail_window.show_window()
