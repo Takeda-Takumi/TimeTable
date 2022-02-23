@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import tkinter as tk
 from datetime import datetime
+import shelve #ファイル保存に関わるライブラリ
 
 # 別ファイルのインポート
 import detail_window as dw
@@ -27,10 +28,15 @@ class Application(tk.Frame):
         self.create_timetable()
         self.input_test_data()
 
+        self.save_timetable()
+        self.load_timetable()
+
 
     # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
     def button_func(self, widget):
         if not self._dw_is_open:
+            if(widget.get_subject().get_asg_num() > 0):
+                print(widget.get_subject()._assignments[0].get_name())
             self._dw_is_open = True
             self._detail_window = dw.DetailWindow(self, widget.get_subject())
             self._detail_window.set_func("window_closed", self.dw_close)
@@ -74,6 +80,9 @@ class Application(tk.Frame):
                         widget.set_color("#F8C471") # 3日以上なら黄色
                     else:
                         widget.set_color("#E74C3C") # 3日以内なら赤
+
+        self.save_timetable()
+        self.load_timetable()
 
     # detail_windowが閉じたときに_dw_is_openとテキスト、色を更新する関数
     def dw_close(self):
@@ -138,6 +147,16 @@ class Application(tk.Frame):
         label.grid(column=0, row=5)
         label = tk.Label(text="6", width = 14, height = 5)
         label.grid(column=0, row=6)
+
+    def save_timetable(self):
+        with shelve.open("timetable.shelve",) as file:
+            for i in range(len(self.widgets)):
+                file[str(i)] = self.widgets[i].get_subject()
+
+    def load_timetable(self):
+        with shelve.open("timetable.shelve",) as file:
+            for i in range(len(self.widgets)):
+                self.widgets[i].set_subject(file[str(i)])
 
 
 
