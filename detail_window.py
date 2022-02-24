@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.font as f
+import datetime
 
 import subject as sb
 import custom_widgets as cw
@@ -7,7 +8,48 @@ import input_assignment as ia
 
 from functools import partial
 #
-# class AssignmentFrame:
+class AssignmentFrame(tk.Frame):
+    def __init__(self, master = None, asig= sb.Assignment(), name1=None):
+        super().__init__(master)
+        self._root_win=tk.Frame(master)
+        self._asig=asig
+        self._make()
+
+    def _make(self):
+        self._root_win.config(bg="light sky blue")
+
+        size_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="size_frame")
+        name_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
+        dead_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
+        bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
+
+        l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15))
+        l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15))
+        bt_remove=tk.Button(bt_frame, text="削除", font=("", 10))
+
+        l_name.pack(anchor=tk.W, pady = 5)
+        l_dead.pack(pady=5)
+        bt_remove.pack(anchor=tk.E)
+
+        size_frame.pack()
+        name_frame.pack(expand=True, fill=tk.X)
+        dead_frame.pack(expand=True, fill=tk.X)
+        bt_frame.pack(expand=True, fill=tk.X)
+
+    def configure(self, **kwargs):
+        self._root_win.configure(**kwargs)
+
+    def bind(self, *args):
+        self._root_win.bind(*args)
+
+    def pack(self, **kwargs):
+        self._root_win.pack(**kwargs)
+
+    def config_width(self, width):
+        self._root_win.nametowidget("size_frame").configure(width=width)
+
+    def winfo_width(self):
+        return self._root_win.winfo_width()
 
 #詳細画面クラス
 class DetailWindow:
@@ -237,11 +279,9 @@ class DetailWindow:
             def _add_widget():
                 assignment = ias.get()
                 self._subject.add_asg(assignment)
-                asi_name = tk.Label(sf_kadai.get(), text=assignment.get_name())
-                asi_dead = tk.Label(sf_kadai.get(),
-                text=str(assignment.get_deadline()))
-                asi_name.pack()
-                asi_dead.pack()
+                asigf = AssignmentFrame(sf_kadai.get(), assignment)
+                asigf.config_width(sf_kadai.cget_canvas("width"))
+                sf_kadai.pack_widget(asigf, pady=5)
 
             ias.set_func("on_ok_button", _add_widget)
             ias.make_window()
@@ -321,7 +361,7 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.title("Main Window")
-    root.geometry("300x300")
+    root.geometry("400x400")
 
     subject = sb.Subject()
     subject.set_name("アルゴリズムとデータ構造")
@@ -342,7 +382,7 @@ if __name__ == "__main__":
         tmp.set_memo("過去問無し、出席点あり")
         dw.set_subject(tmp)
         dw.show_window()
-        
+
     has = tk.BooleanVar(value=True)
     but1 = tk.Button(root, text = "サブウィンドウ表示", command = partial(dw.show_window, has))
     but1.pack()
@@ -352,6 +392,14 @@ if __name__ == "__main__":
     but4 = tk.Button(root, text="サブジェクト変更", command=func2)
     but4.pack()
 
+    assignment=sb.Assignment("課題レポート1")
+    assignment.set_deadline(2022, 6, 30, 23, 55)
+    asi2=sb.Assignment("課題2")
+    asi2.set_deadline(2022, 12, 31, 12, 0)
+    af = AssignmentFrame(root, assignment)
+    af2 = AssignmentFrame(root, asi2)
+    af.pack()
+    af2.pack()
 
     root.mainloop()
     print(has.get())

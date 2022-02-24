@@ -233,11 +233,12 @@ class ScrollFrame(tk.Frame):
 
     def _adjust(self, e):
         maxw, maxh = 0, 0
+
         self._canvas.configure(scrollregion=self._canvas.bbox("all"))
         for w in self._inframe.winfo_children():
             maxw = max(maxw, w.winfo_width())
         if ( maxw == 0 ):
-            maxw = 200
+            maxw = 300
         self._canvas.configure(width=maxw)
 
     def _mouse_y_scroll(self, event):
@@ -258,6 +259,9 @@ class ScrollFrame(tk.Frame):
     def get(self):
         return self._inframe
 
+    def cget_canvas(self, cmd):
+        return self._canvas.cget(cmd)
+
     def pack(self, **kwargs):
         self._outframe.pack(kwargs)
 
@@ -265,8 +269,8 @@ class ScrollFrame(tk.Frame):
         self._outframe.grid(kwargs)
 
     def pack_widget(self, widget, **kwargs):
-        widget.bind("<MouseWheel>", self._mouse_y_scroll)
-        widget.pack(kwargs)
+        widget.bind_all("<MouseWheel>", self._mouse_y_scroll)
+        widget.pack(**kwargs)
 
 class GuideButton(tk.Button):
     """
@@ -360,7 +364,7 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.title("Main Window")
-    root.geometry("300x200")
+    root.geometry("300x300")
 
     ge = GuideEntry(root)
     ge.set_alpha_str("科目名")
@@ -372,6 +376,12 @@ if __name__ == "__main__":
     bt1.pack()
     bt2 = tk.Button(root, text="Button2", command= lambda : print("text=", ge.get()))
     bt2.pack()
+    f1 = tk.Frame(root, bg="light sky blue")
+    f1.pack()
+    f2=tk.Frame(f1, width=200, height=0, bg="black")
+    f2.pack()
+    l1 = tk.Label(f1, bg="Khaki2", text="Label1")
+    l1.pack()
 
-    print(root.children)
+    # print(l1.cget("width"))
     root.mainloop()
