@@ -1,12 +1,16 @@
+# -*- coding:utf-8 -*-
 import tkinter as tk
 import tkinter.font as f
 from tkinter import ttk
 from datetime import date, datetime
+# from tkcalendar import Calendar
 import subject as sb
 import custom_widgets as cw
 
 from functools import partial
 
+_base_color='#F9F9F9'
+_accent_color='#00ACEE'
 # 課題入力用クラス
 class InputAssignment:
     def __init__(self):
@@ -24,15 +28,18 @@ class InputAssignment:
         ass_win.option_add("*Font","bold 20")
         ass_win.lift()
         ass_win.attributes("-topmost",True)
+        # ass_win.config(bg='#F9F9F9')
 
         # 課題名用フレーム
         frame_name=tk.Frame(ass_win)
         frame_name.pack(side="top",fill='both', expand=True)
+        frame_name.config(bg=_base_color)
 
         # 課題名ラベル
         label_name = tk.Label(frame_name)
         label_name.config(text = "課題名:")
         label_name.pack(side='left')
+        label_name.config(bg=_base_color)
 
         # 課題名入力
         ent_name = tk.Entry(frame_name,fg="gray")
@@ -60,16 +67,20 @@ class InputAssignment:
         # print(type(today.year))
         default_year_index=today.year-2022
         default_month_index=today.month-1
-        default_day_index=today.day-1
+        default_day_index=int(today.day-1)
         
         # 期限入力用combobox
         year_values=[i for i in range(2022, 3000)]
         month_values=[i for i in range(1, 13)]
-        day_values=[i for i in range(1, 32)]
+        day31_values=[i for i in range(1, 32)]
+        day30_values=[i for i in range(1, 31)]
+        day29_values=[i for i in range(1, 30)]
+        day28_values=[i for i in range(1, 29)]
+        
         hour_values=[i for i in range(0, 24)]
         minute_values=[i for i in range(1, 60)]
         
-        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values)
+        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values,state="readonly")
         year_combobox.current(default_year_index)
         year_combobox.pack(side="left")
         year_combobox.pack()
@@ -79,18 +90,68 @@ class InputAssignment:
         label_year.pack(side="left")
         label_year.pack()
 
-        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values)
+        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values,state="readonly")
         month_combobox.current(default_month_index)
         month_combobox.pack(side="left")
         month_combobox.pack()
+        month_combobox.config(height=12)
 
         label_month = tk.Label(frame_deadline)
         label_month.config(text = "月")
         label_month.pack(side="left")
         label_month.pack()
 
-        day_combobox = ttk.Combobox(frame_deadline,width=2,values=day_values)
+        def is_leap_year(year):
+            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+                return True
+            else:
+                return False 
+
+        def changeday(event):
+            check_year = is_leap_year(int(year_combobox.get()))
+            check_month = int(month_combobox.get())
+            # day_combobox.delete(0,'end')
+            print("!!!!!!!!!!!!!!check_month",check_month)
+            if(check_month==2):
+                if(check_year==True):
+                    day_combobox['values']=day29_values
+                    print("day28_values",day29_values)
+                else:
+                    day_combobox['values']=day28_values
+                    print("day28_values",day28_values)
+
+            elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
+                day_combobox['values']=day30_values
+                # day_combobox.config(height=30-default_day_index)
+                print("day30_values",day30_values)
+            else:
+                day_combobox['values']=day31_values
+                # day_combobox.config(height=31-default_day_index)
+                print("day31_values",day31_values)
+            # day_combobox.config(height=17)
+        
+# -----------------------------------------------------
+    # day_combobox 生成
+        day_combobox = ttk.Combobox(frame_deadline,width=2,state="readonly")
+        changeday(True)
+        
+        # check_year = is_leap_year(int(year_combobox.get()))
+        # check_month = int(month_combobox.get())
+        # if(check_month==2):
+        #     if(check_year==True):
+        #         day_combobox['values']=day29_values
+        #     else:
+        #         day_combobox['values']=day28_values
+        # elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
+        #     day_combobox['values']=day30_values
+        # else:
+        #     day_combobox['values']=day31_values
+        # # day_combobox.config(height=7)
+
         day_combobox.current(default_day_index)
+
+        year_combobox.bind("<<ComboboxSelected>>", changeday)
+        month_combobox.bind("<<ComboboxSelected>>", changeday)
         day_combobox.pack(side="left")
         day_combobox.pack()
 
@@ -99,7 +160,7 @@ class InputAssignment:
         label_day.pack(side="left")
         label_day.pack()
 
-        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values)
+        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values,state="readonly")
         hour_combobox.current(len(hour_values)-1)
         hour_combobox.pack(side="left")
         hour_combobox.pack()
@@ -109,7 +170,7 @@ class InputAssignment:
         label_hour.pack(side="left")
         label_hour.pack()
 
-        minute_combobox = ttk.Combobox(frame_deadline,width=2,values=minute_values)
+        minute_combobox = ttk.Combobox(frame_deadline,width=2,values=minute_values,state="readonly")
         minute_combobox.current(len(minute_values)-1)
         minute_combobox.pack(side="left")
         minute_combobox.pack()
@@ -121,8 +182,9 @@ class InputAssignment:
 
         def mouse_on(e):
             # ok_button['fg'] = '#19ADF8'
-            ok_button['fg'] = '#FF3125'
-            
+            # ok_button['fg'] = '#FF3125'
+            ok_button['fg'] = '#00acee'
+             
         def mouse_leave(e):
             # ok_button['background'] = '#E6E3E2'
             ok_button['fg'] = 'gray'
