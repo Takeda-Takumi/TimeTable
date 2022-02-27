@@ -134,9 +134,9 @@ class Application(tk.Frame):
         labelWed.grid(column=3, row=0)
         labelThu = tk.Label(text="木", width = 14, height = 5, bg = BASE_COLOR)
         labelThu.grid(column=4, row=0)
-        labelFri = tk.Label(text="金", width=14, height=5, bg = BASE_COLOR)
+        labelFri = tk.Label(text="金", width = 14, height = 5, bg = BASE_COLOR)
         labelFri.grid(column=5, row=0)
-        labelSat = tk.Label(text="土", fg="#0000F0", width=14, height=5, bg = BASE_COLOR)
+        labelSat = tk.Label(text="土", width = 14, height = 5, bg = BASE_COLOR, fg="#0000F0")
         labelSat.grid(column=6, row=0)
 
         label = tk.Label(text="1", width = 14, height = 5, bg = BASE_COLOR)
