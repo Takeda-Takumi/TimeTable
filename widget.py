@@ -43,6 +43,13 @@ class Widget(tk.Button):
     def restart_button(self):
         self._button["state"] = tk.NORMAL
 
+    # _subjectを設定する
+    def set_subject(self, new_subject):
+        if(type(new_subject) == subj.Subject):
+            self._subject = new_subject
+        else:
+            print("set_subject()の引数がSubject型ではありません")
+
     # _subjectをそのままを返す
     def get_subject(self):
         return self._subject
@@ -58,3 +65,6 @@ class Widget(tk.Button):
     # _subjectの課題の中で最も近い締切日を返す
     def get_subj_close_asg_deadline(self):
         return self._subject.get_close_asg_deadline()
+
+if __name__ == "__main__":
+    pass
