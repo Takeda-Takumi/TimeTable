@@ -8,6 +8,8 @@ import os # ファイルの存在確認に関わるライブラリ
 import detail_window as dw
 import widget as wg
 
+BASE_COLOR = "#F9F9F9"
+ACCENT_COLOR = "#00ACEE"
 
 class Application(tk.Frame):
     def __init__(self, master=None):
