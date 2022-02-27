@@ -8,10 +8,13 @@ import subject as subj
 BASE_COLOR = "#F9F9F9"
 ACCENT_COLOR = "#00ACEE"
 class Widget(tk.Button):
+    global BASE_COLOR
+    global ACCENT_COLOR
+    
     def __init__(self):
         self._func = lambda self:print("ボタンを押したときの関数をセットしてください")
         self._subject = subj.Subject()
-        self._button = tk.Button(bg="#EAECEE", width=14, height=5, borderwidth=0, command=self.button_func)
+        self._button = tk.Button(bg=BASE_COLOR, width=14, height=5, borderwidth=0, command=self.button_func)
 
     # ボタンが押されたときに実行する関数をセットする関数。
     # Widget.set_button_func(<ボタンを押したときに実行する関数>, 引数1, 引数2, …)でセット可能。

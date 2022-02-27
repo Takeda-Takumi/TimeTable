@@ -72,7 +72,7 @@ class Application(tk.Frame):
         for widget in self.widgets:
             widget.change_text() # テキストの更新
             if widget.get_subj_name() == "" and widget.get_subj_asg_num() == 0:
-                widget.set_color("#EAECEE") # 科目名空欄かつ課題数0なら初期色
+                widget.set_color(BASE_COLOR) # 科目名空欄かつ課題数0なら初期色
             else:
                 if widget.get_subj_close_asg_deadline() == datetime.max:
                     widget.set_color("#D5F5E3") # 課題期限ないなら白
