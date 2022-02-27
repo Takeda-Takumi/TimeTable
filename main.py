@@ -2,8 +2,7 @@
 import tkinter as tk
 from datetime import datetime
 import shelve #ファイル保存に関わるライブラリ
-import os
-from turtle import bgcolor, color # ファイルの存在確認に関わるライブラリ
+import os # ファイルの存在確認に関わるライブラリ
 
 # 別ファイルのインポート
 import detail_window as dw
