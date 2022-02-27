@@ -1,10 +1,7 @@
-# -*- coding:utf-8 -*-
 import tkinter as tk
 import tkinter.font as f
-from tkinter import ttk
-from datetime import date, datetime
-# from tkcalendar import Calendar
 import datetime
+
 import subject as sb
 import custom_widgets as cw
 import input_assignment as ia
@@ -12,6 +9,7 @@ import input_assignment as ia
 from functools import partial
 #
 class AssignmentFrame(tk.Frame):
+    colors = { "base_bg": "#4ddb6e"}
     def __init__(self, master = None, asig= sb.Assignment(), name1=None):
         super().__init__(master)
         self._root_win=tk.Frame(master)
@@ -19,18 +17,18 @@ class AssignmentFrame(tk.Frame):
         self._make()
 
     def _make(self):
-        self._root_win.config(bg="light sky blue")
+        self._root_win.config(bg=AssignmentFrame.colors["base_bg"])
 
         size_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="size_frame")
         name_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
         dead_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
         bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
 
-        l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15))
-        l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15))
+        l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15), bg=name_frame.cget("bg"))
+        l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15), bg=dead_frame.cget("bg"))
         bt_remove=tk.Button(bt_frame, text="削除", font=("", 10))
 
-        l_name.pack(anchor=tk.W, pady = 5)
+        l_name.pack(anchor=tk.W, pady = 5, padx=3)
         l_dead.pack(pady=5)
         bt_remove.pack(anchor=tk.E)
 
@@ -42,215 +40,6 @@ class AssignmentFrame(tk.Frame):
     def configure(self, **kwargs):
         self._root_win.configure(**kwargs)
 
-_base_color='#F9F9F9'
-_accent_color='#00ACEE'
-# 課題入力用クラス
-class InputAssignment:
-    def __init__(self):
-        self.name = "nononono"
-        self.deadline = ""
-    
-    def make_window(self):
-
-        default_name = "最適化レポート"
-        # default_deadline = "2022/12/08/12/34"
-
-        ass_win = tk.Tk()
-        ass_win.geometry("670x120")
-        ass_win.title("課題追加")
-        ass_win.option_add("*Font","bold 20")
-        ass_win.lift()
-        ass_win.attributes("-topmost",True)
-        # ass_win.config(bg='#F9F9F9')
-
-        # 課題名用フレーム
-        frame_name=tk.Frame(ass_win)
-        frame_name.pack(side="top",fill='both', expand=True)
-        frame_name.config(bg=_base_color)
-
-        # 課題名ラベル
-        label_name = tk.Label(frame_name)
-        label_name.config(text = "課題名:")
-        label_name.pack(side='left')
-        label_name.config(bg=_base_color)
-
-        # 課題名入力
-        ent_name = tk.Entry(frame_name,fg="gray")
-        ent_name.insert(0,default_name)
-
-        def clear(event):
-            ent_name["fg"]="black"
-            if ent_name.get() == default_name:
-                ent_name.delete(0,len(ent_name.get()))
-             
-        ent_name.bind("<Button-1>",clear)
-        ent_name.pack(side="left")
-
-        # 期限用フレーム
-        frame_deadline=tk.Frame(ass_win)
-        frame_deadline.pack(side="top",fill='both', expand=True)
-
-        # 期限ラベル
-        label_deadline = tk.Label(frame_deadline)
-        label_deadline.config(text = "提出期限:")
-        label_deadline.pack(side="left")
-
-        today=date.today()
-        # print(today.year)
-        # print(type(today.year))
-        default_year_index=today.year-2022
-        default_month_index=today.month-1
-        default_day_index=int(today.day-1)
-        
-        # 期限入力用combobox
-        year_values=[i for i in range(2022, 3000)]
-        month_values=[i for i in range(1, 13)]
-        day31_values=[i for i in range(1, 32)]
-        day30_values=[i for i in range(1, 31)]
-        day29_values=[i for i in range(1, 30)]
-        day28_values=[i for i in range(1, 29)]
-        
-        hour_values=[i for i in range(0, 24)]
-        minute_values=[i for i in range(1, 60)]
-        
-        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values,state="readonly")
-        year_combobox.current(default_year_index)
-        year_combobox.pack(side="left")
-        year_combobox.pack()
-
-        label_year = tk.Label(frame_deadline)
-        label_year.config(text = "年")
-        label_year.pack(side="left")
-        label_year.pack()
-
-        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values,state="readonly")
-        month_combobox.current(default_month_index)
-        month_combobox.pack(side="left")
-        month_combobox.pack()
-        month_combobox.config(height=12)
-
-        label_month = tk.Label(frame_deadline)
-        label_month.config(text = "月")
-        label_month.pack(side="left")
-        label_month.pack()
-
-        def is_leap_year(year):
-            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
-                return True
-            else:
-                return False 
-
-        def changeday(event):
-            check_year = is_leap_year(int(year_combobox.get()))
-            check_month = int(month_combobox.get())
-            # day_combobox.delete(0,'end')
-            print("!!!!!!!!!!!!!!check_month",check_month)
-            if(check_month==2):
-                if(check_year==True):
-                    day_combobox['values']=day29_values
-                    print("day28_values",day29_values)
-                else:
-                    day_combobox['values']=day28_values
-                    print("day28_values",day28_values)
-
-            elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
-                day_combobox['values']=day30_values
-                # day_combobox.config(height=30-default_day_index)
-                print("day30_values",day30_values)
-            else:
-                day_combobox['values']=day31_values
-                # day_combobox.config(height=31-default_day_index)
-                print("day31_values",day31_values)
-            # day_combobox.config(height=17)
-        
-# -----------------------------------------------------
-    # day_combobox 生成
-        day_combobox = ttk.Combobox(frame_deadline,width=2,state="readonly")
-        changeday(True)
-        
-        # check_year = is_leap_year(int(year_combobox.get()))
-        # check_month = int(month_combobox.get())
-        # if(check_month==2):
-        #     if(check_year==True):
-        #         day_combobox['values']=day29_values
-        #     else:
-        #         day_combobox['values']=day28_values
-        # elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
-        #     day_combobox['values']=day30_values
-        # else:
-        #     day_combobox['values']=day31_values
-        # # day_combobox.config(height=7)
-
-        day_combobox.current(default_day_index)
-
-        year_combobox.bind("<<ComboboxSelected>>", changeday)
-        month_combobox.bind("<<ComboboxSelected>>", changeday)
-        day_combobox.pack(side="left")
-        day_combobox.pack()
-
-        label_day = tk.Label(frame_deadline)
-        label_day.config(text = "日")
-        label_day.pack(side="left")
-        label_day.pack()
-
-        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values,state="readonly")
-        hour_combobox.current(len(hour_values)-1)
-        hour_combobox.pack(side="left")
-        hour_combobox.pack()
-
-        label_hour = tk.Label(frame_deadline)
-        label_hour.config(text = "時")
-        label_hour.pack(side="left")
-        label_hour.pack()
-
-        minute_combobox = ttk.Combobox(frame_deadline,width=2,values=minute_values,state="readonly")
-        minute_combobox.current(len(minute_values)-1)
-        minute_combobox.pack(side="left")
-        minute_combobox.pack()
-
-        label_minute = tk.Label(frame_deadline)
-        label_minute.config(text = "分")
-        label_minute.pack(side="left")
-        label_minute.pack()
-
-        def mouse_on(e):
-            # ok_button['fg'] = '#19ADF8'
-            # ok_button['fg'] = '#FF3125'
-            ok_button['fg'] = '#00acee'
-             
-        def mouse_leave(e):
-            # ok_button['background'] = '#E6E3E2'
-            ok_button['fg'] = 'gray'
-
-        def buttonclicked():
-            _name = ent_name.get()
-            # assignment.set_name(_name)
-            self.name=_name
-            year = int(year_combobox.get())
-            month = int(month_combobox.get())
-            day = int(day_combobox.get())
-            hour = int(hour_combobox.get())
-            minute = int(minute_combobox.get())
-            
-            print("_name",_name)
-            print("self.name=",self.name)
-
-            print("year,month,day,hour,minute",year,month,day,hour,minute)
-            self.deadline=datetime(year, month, day, hour, minute)
-            print("self.deadline=",self.deadline)
-            ass_win.destroy()
-
-        # 完了ボタン
-        ok_button = tk.Button(frame_deadline,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
-        # ok_button = tk.Button(frame_deadline,text = "OK",relief="groove",overrelief="raised",command=buttonclicked)
-        ok_button.pack(side="left")
-        ok_button.bind("<Enter>", mouse_on)
-        ok_button.bind("<Leave>", mouse_leave)
-
-    #     assignment = sb.Assignment()
-    # assignment.set_name("数値計算_第２回レポート")
-    # assignment.set_deadline(2022,8,8,12,34)
-        ass_win.mainloop()
     def bind(self, *args):
         self._root_win.bind(*args)
 
@@ -265,6 +54,9 @@ class InputAssignment:
 
 #詳細画面クラス
 class DetailWindow:
+    Basec="#f9f9f9"
+    Accentsc="#00acee"
+
     """
     DetailWindow
         詳細ウィンドウの生成・実行を行うクラス
@@ -299,7 +91,7 @@ class DetailWindow:
         self._funcs={}
         self._x = 100
         self._y = 100
-        self._colors = { "bg_front":"Medium purple", "bg_back":"grey19", "bg_en":"grey19", "fg_memo_title":"ghostwhite", "en_insertbg":"ghostwhite"}
+        self._colors = { "bg_front":DetailWindow.Accentsc, "bg_back":DetailWindow.Basec, "bg_en":DetailWindow.Basec, "fg_memo_title":DetailWindow.Accentsc, "char_base":"SystemWindowText", "en_insertbg":"SystemWindowText"}
 
         tmp = [ "window_closed", "on_restore"]
         for i in tmp:
@@ -450,7 +242,7 @@ class DetailWindow:
         self._win.attributes("-topmost", True)
         self._win.bind("<Destroy>", self._rest_pos, "+")
         #frame設定
-        name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], bd = 3, relief = tk.GROOVE, name="name_frame")
+        name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], name="name_frame")
         memo_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5, name="memo_frame")
         commands_frame = tk.Frame(self._win, bg=self._colors["bg_back"],  bd = 3, padx=10, name="commands_frame")
         kadai_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5, name = "kadai_frame")
@@ -460,18 +252,18 @@ class DetailWindow:
         commands_frame.pack( side=tk.BOTTOM, fill = tk.X, ipadx = 10)
         kadai_frame.pack( expand = True, fill = tk.BOTH)
 
+        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), bg=self._colors["bg_en"], fg=self._colors["char_base"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], name="en_name")
         #name_frame内
-        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=1, name="en_name")
         en_name.bind("<Return>", _focus_out)
         en_name.set_alpha_color("light sky blue")
         en_name.set_alpha_str("科目名")
 
-        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 2)
+        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 3, pady=3)
 
         #memo_frame内
-        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32_white.png")
+        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32.png")
         l_memo_title = tk.Label(memo_frame, text="memo", bg = self._colors["bg_back"], fg = self._colors["fg_memo_title"], font = ("Century", 12), image=self._imgs["l_memo_title"], compound="left")
-        txb_memo = tk.Text(memo_frame, fg="ghostwhite", bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID, name="txb_memo")
+        txb_memo = tk.Text(memo_frame, fg=self._colors["char_base"], bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID, name="txb_memo")
 
         l_memo_title.pack(side=tk.TOP, anchor=tk.NW, pady = 3, padx = 10)
         txb_memo.pack(side=tk.BOTTOM, anchor=tk.SW, fill=tk.X, padx = 5, pady= 2)
@@ -479,9 +271,8 @@ class DetailWindow:
         #kadai_frame内
         self._imgs["l_kadai_title"]=tk.PhotoImage(file="./image/detail_window/ico_asig_title_32_black.png")
         self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./image/detail_window/ico_announce_16_white.png")
-        self._imgs["dummy"]=tk.PhotoImage(file="./image/detail_window/ico_toumei_32.png")
-        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=3, font=("HGSｺﾞｼｯｸE", 15), relief = tk.GROOVE, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
-        l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg="ghostwhite",bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3, name="l_kadai_announce")
+        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=0, font=("HGSｺﾞｼｯｸE", 15), relief = tk.SOLID, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
+        l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg=self._colors["char_base"],bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3, name="l_kadai_announce")
         asig_frame=tk.Frame(kadai_frame, bg=self._colors["bg_back"], name="asig_frame")
         sf_kadai= cw.ScrollFrame(asig_frame, name="sf_kadai")
 
@@ -490,7 +281,8 @@ class DetailWindow:
 
             def _add_widget():
                 assignment = ias.get()
-                self._subject.add_asg(assignment)
+                if ( not self._subject.add_asg(assignment) ):
+                    return
                 asigf = AssignmentFrame(sf_kadai.get(), assignment)
                 asigf.config_width(sf_kadai.cget_canvas("width"))
                 sf_kadai.pack_widget(asigf, pady=5)
@@ -516,12 +308,12 @@ class DetailWindow:
 
         #commands_frame内
         self._imgs["bt_add_asig"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_grey.png")
-        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_white.png")
+        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./image/detail_window/ico_add_asig_32_acctive.png")
         self._imgs["bt_restore"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_grey.png")
-        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_white.png")
+        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_acctive.png")
         bt_restore=cw.GuideButton( commands_frame, bg=commands_frame.cget("bg"), fg="ghostwhite", command=_restore, image=self._imgs["bt_restore"], compound="top", bd=0, cursor="hand2", activebackground=commands_frame.cget("bg"))
         bt_restore.config_selected(image=self._imgs["bt_restore_selected"])
-        bt_add_asig = cw.GuideButton(commands_frame, bg = "grey19", image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
+        bt_add_asig = cw.GuideButton(commands_frame, bg = commands_frame.cget("bg"), image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
         bt_add_asig.config_selected(image=self._imgs["bt_add_asig_selected"])
 
         # bt_restore_frame.pack(side=tk.LEFT)
@@ -541,6 +333,16 @@ class DetailWindow:
         en_name.insert(self._subject.get_name())
         txb_memo.delete("1.0", "end")
         txb_memo.insert("1.0", self._subject.get_memo())
+
+        self._place_asi()
+
+    def _place_asi(self):
+        sf_kadai=self._find("sf_kadai")
+        sf_kadai.all_destroy()
+        for asi in self._subject.get_assigments().values():
+            asigf = AssignmentFrame(sf_kadai.get(), asi)
+            asigf.config_width(sf_kadai.cget_canvas("width"))
+            sf_kadai.pack_widget(asigf, pady=5)
 
     #windowの削除
     def _destory(self):
@@ -578,6 +380,13 @@ if __name__ == "__main__":
     subject = sb.Subject()
     subject.set_name("アルゴリズムとデータ構造")
     subject.set_memo("・レポート提出厳守!")
+    assignment=sb.Assignment("課題レポート1")
+    assignment.set_deadline(2022, 6, 30, 23, 55)
+    asi2=sb.Assignment("課題2")
+    asi2.set_deadline(2022, 12, 31, 12, 0)
+
+    subject.add_asg(assignment)
+    subject.add_asg(asi2)
 
     dw = DetailWindow(root)
     dw.set_subject(subject)
@@ -603,15 +412,6 @@ if __name__ == "__main__":
     frame1 = tk.Frame(root)
     but4 = tk.Button(root, text="サブジェクト変更", command=func2)
     but4.pack()
-
-    assignment=sb.Assignment("課題レポート1")
-    assignment.set_deadline(2022, 6, 30, 23, 55)
-    asi2=sb.Assignment("課題2")
-    asi2.set_deadline(2022, 12, 31, 12, 0)
-    af = AssignmentFrame(root, assignment)
-    af2 = AssignmentFrame(root, asi2)
-    af.pack()
-    af2.pack()
 
     root.mainloop()
     print(has.get())

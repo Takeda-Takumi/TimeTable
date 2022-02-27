@@ -272,6 +272,10 @@ class ScrollFrame(tk.Frame):
         widget.bind_all("<MouseWheel>", self._mouse_y_scroll)
         widget.pack(**kwargs)
 
+    def all_destroy(self):
+        for w in self._inframe.winfo_children():
+            w.destroy()
+
 class GuideButton(tk.Button):
     """
     カーソルによるガイドを行うボタンウィジェット
@@ -372,16 +376,16 @@ if __name__ == "__main__":
     ge.insert("最適化")
     ge.pack()
 
-    bt1 = tk.Button(root, text="Button1", command= lambda : { ge.set_alpha_color("Khaki2")})
-    bt1.pack()
-    bt2 = tk.Button(root, text="Button2", command= lambda : print("text=", ge.get()))
-    bt2.pack()
-    f1 = tk.Frame(root, bg="light sky blue")
-    f1.pack()
-    f2=tk.Frame(f1, width=200, height=0, bg="black")
-    f2.pack()
-    l1 = tk.Label(f1, bg="Khaki2", text="Label1")
-    l1.pack()
+    sf = ScrollFrame(root)
+    bt1 = tk.Button(sf.get(), text="button1")
+    bt2 = tk.Button(sf.get(), text="button2")
+    sf.pack_widget(bt1)
+    sf.pack_widget(bt2)
 
+    bt3=tk.Button(root, text="all destroy", command=sf.all_destroy)
+    entry=tk.Entry(root)
+    print(entry.cget("fg"))
+    bt3.pack()
+    sf.pack()
     # print(l1.cget("width"))
     root.mainloop()
