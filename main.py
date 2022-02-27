@@ -2,7 +2,7 @@
 import tkinter as tk
 from datetime import datetime
 import shelve #ファイル保存に関わるライブラリ
-import os # ファイルの存在確認に関わるライブラリ
+import os
 
 # 別ファイルのインポート
 import detail_window as dw
@@ -10,19 +10,24 @@ import widget as wg
 
 BASE_COLOR = "#F9F9F9"
 ACCENT_COLOR = "#00ACEE"
-
+WINDOW_WIDTH_RATIO = 51
+WINDOW_HEIGHT_RATIO = 110
 class Application(tk.Frame):
     global BASE_COLOR
     global ACCENT_COLOR
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
-        self.master.geometry("800x600")
+        self.master.geometry("1000x800")
+        self.update_idletasks()
         self.master.title("TimeTable")
         self._detail_window = dw.DetailWindow(self) # DetailWindow型の変数
         self._dw_is_open = False # _detail_windowがすでに開いてるかどうかの変数
+        self._button_width = int(self.master.winfo_width()/WINDOW_WIDTH_RATIO)
+        self._button_height = int(self.master.winfo_height()/WINDOW_HEIGHT_RATIO)
 
         # ウィジェットを作成
-        self.widgets = [wg.Widget() for i in range(36)]
+        self.widgets = [wg.Widget(self._button_width, self._button_height) for i in range(36)]
+        # self.widgets = [wg.Widget(1000, 1)  for i in range(36)]
         for i in range(6):
             for j in range(6):
                 # ボタンの関数を設定
@@ -125,30 +130,30 @@ class Application(tk.Frame):
 
     # ラベルを作成、配置
     def create_timetable(self):
-        labelMon = tk.Label(text="月", width = 14, height = 5, bg = BASE_COLOR)
+        labelMon = tk.Label(text="月", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         labelMon.grid(column=1, row=0)
-        labelTue = tk.Label(text="火", width = 14, height = 5, bg = BASE_COLOR)
+        labelTue = tk.Label(text="火", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         labelTue.grid(column=2, row=0)
-        labelWed = tk.Label(text="水", width = 14, height = 5, bg = BASE_COLOR)
+        labelWed = tk.Label(text="水", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         labelWed.grid(column=3, row=0)
-        labelThu = tk.Label(text="木", width = 14, height = 5, bg = BASE_COLOR)
+        labelThu = tk.Label(text="木", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         labelThu.grid(column=4, row=0)
-        labelFri = tk.Label(text="金", width = 14, height = 5, bg = BASE_COLOR)
+        labelFri = tk.Label(text="金", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         labelFri.grid(column=5, row=0)
-        labelSat = tk.Label(text="土", width = 14, height = 5, bg = BASE_COLOR, fg="#0000F0")
+        labelSat = tk.Label(text="土", width = self._button_width, height = self._button_height, bg = BASE_COLOR, fg="#0000F0")
         labelSat.grid(column=6, row=0)
 
-        label = tk.Label(text="1", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="1", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=1)
-        label = tk.Label(text="2", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="2", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=2)
-        label = tk.Label(text="3", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="3", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=3)
-        label = tk.Label(text="4", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="4", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=4)
-        label = tk.Label(text="5", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="5", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=5)
-        label = tk.Label(text="6", width = 14, height = 5, bg = BASE_COLOR)
+        label = tk.Label(text="6", width = self._button_width, height = self._button_height, bg = BASE_COLOR)
         label.grid(column=0, row=6)
 
     def save_timetable(self):
