@@ -52,8 +52,10 @@ class Subject:
 
         if assignment.get_name() in self._assignments:
             print("課題が重複しています")
+            return False
         else:
             self._assignments[assignment.get_name()] = assignment
+            return True
 
     # id番目の課題を削除する（[a, b, c]の中から2番目=bを削除すると[a, c]になる）
     def del_asg(self, id):
@@ -73,6 +75,9 @@ class Subject:
 
     def get_memo(self):
         return self._memo
+
+    def get_assigments(self):
+        return self._assignments
 
     # 課題の数を返す
     def get_asg_num(self):

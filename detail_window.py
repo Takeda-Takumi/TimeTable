@@ -9,6 +9,7 @@ import input_assignment as ia
 from functools import partial
 #
 class AssignmentFrame(tk.Frame):
+    colors = { "base_bg": "#4ddb6e"}
     def __init__(self, master = None, asig= sb.Assignment(), name1=None):
         super().__init__(master)
         self._root_win=tk.Frame(master)
@@ -16,18 +17,18 @@ class AssignmentFrame(tk.Frame):
         self._make()
 
     def _make(self):
-        self._root_win.config(bg="light sky blue")
+        self._root_win.config(bg=AssignmentFrame.colors["base_bg"])
 
         size_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="size_frame")
         name_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
         dead_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
         bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
 
-        l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15))
-        l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15))
+        l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15), bg=name_frame.cget("bg"))
+        l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15), bg=dead_frame.cget("bg"))
         bt_remove=tk.Button(bt_frame, text="削除", font=("", 10))
 
-        l_name.pack(anchor=tk.W, pady = 5)
+        l_name.pack(anchor=tk.W, pady = 5, padx=3)
         l_dead.pack(pady=5)
         bt_remove.pack(anchor=tk.E)
 
@@ -53,6 +54,9 @@ class AssignmentFrame(tk.Frame):
 
 #詳細画面クラス
 class DetailWindow:
+    Basec="#f9f9f9"
+    Accentsc="#00acee"
+
     """
     DetailWindow
         詳細ウィンドウの生成・実行を行うクラス
@@ -87,7 +91,7 @@ class DetailWindow:
         self._funcs={}
         self._x = 100
         self._y = 100
-        self._colors = { "bg_front":"Medium purple", "bg_back":"grey19", "bg_en":"grey19", "fg_memo_title":"ghostwhite", "en_insertbg":"ghostwhite"}
+        self._colors = { "bg_front":DetailWindow.Accentsc, "bg_back":DetailWindow.Basec, "bg_en":DetailWindow.Basec, "fg_memo_title":DetailWindow.Accentsc, "char_base":"SystemWindowText", "en_insertbg":"SystemWindowText"}
 
         tmp = [ "window_closed", "on_restore"]
         for i in tmp:
@@ -238,7 +242,7 @@ class DetailWindow:
         self._win.attributes("-topmost", True)
         self._win.bind("<Destroy>", self._rest_pos, "+")
         #frame設定
-        name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], bd = 3, relief = tk.GROOVE, name="name_frame")
+        name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], name="name_frame")
         memo_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5, name="memo_frame")
         commands_frame = tk.Frame(self._win, bg=self._colors["bg_back"],  bd = 3, padx=10, name="commands_frame")
         kadai_frame = tk.Frame(self._win, bg = self._colors["bg_back"], bd = 5, name = "kadai_frame")
@@ -248,18 +252,18 @@ class DetailWindow:
         commands_frame.pack( side=tk.BOTTOM, fill = tk.X, ipadx = 10)
         kadai_frame.pack( expand = True, fill = tk.BOTH)
 
+        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), bg=self._colors["bg_en"], fg=self._colors["char_base"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], name="en_name")
         #name_frame内
-        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), fg="ghostwhite", bg=self._colors["bg_en"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], highlightbackground=self._colors["bg_front"], highlightcolor="SteelBlue2", highlightthickness=1, name="en_name")
         en_name.bind("<Return>", _focus_out)
         en_name.set_alpha_color("light sky blue")
         en_name.set_alpha_str("科目名")
 
-        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 2)
+        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 3, pady=3)
 
         #memo_frame内
-        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32_white.png")
+        self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32.png")
         l_memo_title = tk.Label(memo_frame, text="memo", bg = self._colors["bg_back"], fg = self._colors["fg_memo_title"], font = ("Century", 12), image=self._imgs["l_memo_title"], compound="left")
-        txb_memo = tk.Text(memo_frame, fg="ghostwhite", bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID, name="txb_memo")
+        txb_memo = tk.Text(memo_frame, fg=self._colors["char_base"], bg = self._colors["bg_en"], font=("HGSｺﾞｼｯｸM", 13), height = 6, insertbackground=self._colors["en_insertbg"], bd=1, relief=tk.SOLID, name="txb_memo")
 
         l_memo_title.pack(side=tk.TOP, anchor=tk.NW, pady = 3, padx = 10)
         txb_memo.pack(side=tk.BOTTOM, anchor=tk.SW, fill=tk.X, padx = 5, pady= 2)
@@ -267,9 +271,8 @@ class DetailWindow:
         #kadai_frame内
         self._imgs["l_kadai_title"]=tk.PhotoImage(file="./image/detail_window/ico_asig_title_32_black.png")
         self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./image/detail_window/ico_announce_16_white.png")
-        self._imgs["dummy"]=tk.PhotoImage(file="./image/detail_window/ico_toumei_32.png")
-        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=3, font=("HGSｺﾞｼｯｸE", 15), relief = tk.GROOVE, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
-        l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg="ghostwhite",bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3, name="l_kadai_announce")
+        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=0, font=("HGSｺﾞｼｯｸE", 15), relief = tk.SOLID, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
+        l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg=self._colors["char_base"],bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3, name="l_kadai_announce")
         asig_frame=tk.Frame(kadai_frame, bg=self._colors["bg_back"], name="asig_frame")
         sf_kadai= cw.ScrollFrame(asig_frame, name="sf_kadai")
 
@@ -278,7 +281,8 @@ class DetailWindow:
 
             def _add_widget():
                 assignment = ias.get()
-                self._subject.add_asg(assignment)
+                if ( not self._subject.add_asg(assignment) ):
+                    return
                 asigf = AssignmentFrame(sf_kadai.get(), assignment)
                 asigf.config_width(sf_kadai.cget_canvas("width"))
                 sf_kadai.pack_widget(asigf, pady=5)
@@ -304,12 +308,12 @@ class DetailWindow:
 
         #commands_frame内
         self._imgs["bt_add_asig"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_grey.png")
-        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./image/detail_window/ico_add_asigh_32_white.png")
+        self._imgs["bt_add_asig_selected"]=tk.PhotoImage(file="./image/detail_window/ico_add_asig_32_acctive.png")
         self._imgs["bt_restore"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_grey.png")
-        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_white.png")
+        self._imgs["bt_restore_selected"] = tk.PhotoImage(file="./image/detail_window/ico_restore_32_acctive.png")
         bt_restore=cw.GuideButton( commands_frame, bg=commands_frame.cget("bg"), fg="ghostwhite", command=_restore, image=self._imgs["bt_restore"], compound="top", bd=0, cursor="hand2", activebackground=commands_frame.cget("bg"))
         bt_restore.config_selected(image=self._imgs["bt_restore_selected"])
-        bt_add_asig = cw.GuideButton(commands_frame, bg = "grey19", image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
+        bt_add_asig = cw.GuideButton(commands_frame, bg = commands_frame.cget("bg"), image=self._imgs["bt_add_asig"], command=_add_asig, bd=0, relief=tk.RAISED, padx=10, cursor="hand2", activebackground=commands_frame.cget("bg"))
         bt_add_asig.config_selected(image=self._imgs["bt_add_asig_selected"])
 
         # bt_restore_frame.pack(side=tk.LEFT)
@@ -329,6 +333,16 @@ class DetailWindow:
         en_name.insert(self._subject.get_name())
         txb_memo.delete("1.0", "end")
         txb_memo.insert("1.0", self._subject.get_memo())
+
+        self._place_asi()
+
+    def _place_asi(self):
+        sf_kadai=self._find("sf_kadai")
+        sf_kadai.all_destroy()
+        for asi in self._subject.get_assigments().values():
+            asigf = AssignmentFrame(sf_kadai.get(), asi)
+            asigf.config_width(sf_kadai.cget_canvas("width"))
+            sf_kadai.pack_widget(asigf, pady=5)
 
     #windowの削除
     def _destory(self):
@@ -366,6 +380,13 @@ if __name__ == "__main__":
     subject = sb.Subject()
     subject.set_name("アルゴリズムとデータ構造")
     subject.set_memo("・レポート提出厳守!")
+    assignment=sb.Assignment("課題レポート1")
+    assignment.set_deadline(2022, 6, 30, 23, 55)
+    asi2=sb.Assignment("課題2")
+    asi2.set_deadline(2022, 12, 31, 12, 0)
+
+    subject.add_asg(assignment)
+    subject.add_asg(asi2)
 
     dw = DetailWindow(root)
     dw.set_subject(subject)
@@ -391,15 +412,6 @@ if __name__ == "__main__":
     frame1 = tk.Frame(root)
     but4 = tk.Button(root, text="サブジェクト変更", command=func2)
     but4.pack()
-
-    assignment=sb.Assignment("課題レポート1")
-    assignment.set_deadline(2022, 6, 30, 23, 55)
-    asi2=sb.Assignment("課題2")
-    asi2.set_deadline(2022, 12, 31, 12, 0)
-    af = AssignmentFrame(root, assignment)
-    af2 = AssignmentFrame(root, asi2)
-    af.pack()
-    af2.pack()
 
     root.mainloop()
     print(has.get())
