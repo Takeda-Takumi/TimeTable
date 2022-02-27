@@ -81,7 +81,10 @@ class InputAssignment:
         # 期限入力用combobox
         year_values=[i for i in range(2022, 3000)]
         month_values=[i for i in range(1, 13)]
-        day_values=[i for i in range(1, 32)]
+        day31_values=[i for i in range(1, 32)]
+        day30_values=[i for i in range(1, 31)]
+        day29_values=[i for i in range(1, 30)]
+        day28_values=[i for i in range(1, 29)]
         hour_values=[i for i in range(0, 24)]
         minute_values=[i for i in range(1, 60)]
 
@@ -105,8 +108,39 @@ class InputAssignment:
         label_month.pack(side="left")
         label_month.pack()
 
-        day_combobox = ttk.Combobox(frame_deadline,width=2,values=day_values)
+        #閏年判定
+        def is_leap_year(year):
+            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+                return True
+            else:
+                return False 
+
+        #年と月による変化
+        def changeday(event):
+            check_leap_year = is_leap_year(int(year_combobox.get()))
+            check_month = int(month_combobox.get())
+            # print("!!!!!!!!!!!!!!check_month",check_month)
+            if(check_month==2):
+                if(check_leap_year==True):
+                    day_combobox['values']=day29_values
+                    # print("day28_values",day29_values)
+                else:
+                    day_combobox['values']=day28_values
+                    # print("day28_values",day28_values)
+            elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
+                day_combobox['values']=day30_values
+                # print("day30_values",day30_values)
+            else:
+                day_combobox['values']=day31_values
+                # print("day31_values",day31_values)
+            
+        #day_combobox 生成
+        day_combobox = ttk.Combobox(frame_deadline,width=2,state="readonly")
+        changeday(True)
         day_combobox.current(default_day_index)
+
+        year_combobox.bind("<<ComboboxSelected>>", changeday)
+        month_combobox.bind("<<ComboboxSelected>>", changeday)
         day_combobox.pack(side="left")
         day_combobox.pack()
 
@@ -156,16 +190,11 @@ class InputAssignment:
             ass_win.destroy()
 
         # 完了ボタン
-        ok_button = tk.Button(frame_deadline,bg=_base_color,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
-        # ok_button = tk.Button(frame_deadline,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
-        # ok_button = tk.Button(frame_deadline,text = "OK",relief="groove",overrelief="raised",command=buttonclicked)
+        ok_button = tk.Button(frame_deadline,bg=_base_color,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)   
         ok_button.pack(side="left")
         ok_button.bind("<Enter>", mouse_on)
         ok_button.bind("<Leave>", mouse_leave)
 
-    #     assignment = sb.Assignment()
-    # assignment.set_name("数値計算_第２回レポート")
-    # assignment.set_deadline(2022,8,8,12,34)
 
 
 if __name__ == "__main__":
