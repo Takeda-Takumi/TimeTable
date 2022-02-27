@@ -1,6 +1,8 @@
+# -*- coding:utf-8 -*-
 import tkinter as tk
 from tkinter import ttk
 from datetime import date, datetime
+from turtle import title
 import subject as sb
 import custom_widgets as cw
 
@@ -11,6 +13,7 @@ _accent_color='#00ACEE'
 
 # 課題入力用クラス
 class InputAssignment:
+
     def __init__(self, master=None):
         self._master=master
         self._asig=sb.Assignment()
@@ -88,7 +91,7 @@ class InputAssignment:
         hour_values=[i for i in range(0, 24)]
         minute_values=[i for i in range(1, 60)]
 
-        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values)
+        year_combobox = ttk.Combobox(frame_deadline,width=4,values=year_values,state="readonly")
         year_combobox.current(default_year_index)
         year_combobox.pack(side="left")
         year_combobox.pack()
@@ -98,10 +101,11 @@ class InputAssignment:
         label_year.pack(side="left")
         label_year.pack()
 
-        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values)
+        month_combobox = ttk.Combobox(frame_deadline,width=2,values=month_values,state="readonly")
         month_combobox.current(default_month_index)
         month_combobox.pack(side="left")
         month_combobox.pack()
+        month_combobox.config(height=12)
 
         label_month = tk.Label(frame_deadline)
         label_month.config(text = "月",bg=_base_color)
@@ -113,8 +117,8 @@ class InputAssignment:
             if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
                 return True
             else:
-                return False 
-
+                return False
+                    
         #年と月による変化
         def changeday(event):
             check_leap_year = is_leap_year(int(year_combobox.get()))
@@ -133,7 +137,7 @@ class InputAssignment:
             else:
                 day_combobox['values']=day31_values
                 # print("day31_values",day31_values)
-            
+       
         #day_combobox 生成
         day_combobox = ttk.Combobox(frame_deadline,width=2,state="readonly")
         changeday(True)
@@ -141,6 +145,7 @@ class InputAssignment:
 
         year_combobox.bind("<<ComboboxSelected>>", changeday)
         month_combobox.bind("<<ComboboxSelected>>", changeday)
+
         day_combobox.pack(side="left")
         day_combobox.pack()
 
@@ -149,7 +154,7 @@ class InputAssignment:
         label_day.pack(side="left")
         label_day.pack()
 
-        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values)
+        hour_combobox = ttk.Combobox(frame_deadline,width=2,values=hour_values,state="readonly")
         hour_combobox.current(len(hour_values)-1)
         hour_combobox.pack(side="left")
         hour_combobox.pack()
@@ -159,7 +164,7 @@ class InputAssignment:
         label_hour.pack(side="left")
         label_hour.pack()
 
-        minute_combobox = ttk.Combobox(frame_deadline,width=2,values=minute_values)
+        minute_combobox = ttk.Combobox(frame_deadline,width=2,values=minute_values,state="readonly")
         minute_combobox.current(len(minute_values)-1)
         minute_combobox.pack(side="left")
         minute_combobox.pack()
@@ -175,6 +180,18 @@ class InputAssignment:
             # ok_button['background'] = '#E6E3E2'
             ok_button['fg'] = 'gray'
 
+        # 日付の検証関数
+        def validate(year,month,day):
+            validate_date=True
+            try:
+                datetime(year,month,day)
+            except ValueError:
+                validate_date=False
+            if(validate_date):
+                return True
+            else:
+                return False
+
         def buttonclicked():
             _name = ent_name.get()
             # assignment.set_name(_name)
@@ -184,10 +201,13 @@ class InputAssignment:
             day = int(day_combobox.get())
             hour = int(hour_combobox.get())
             minute = int(minute_combobox.get())
-
-            self._asig.set_deadline(year, month, day, hour, minute)
-            self._funcs["on_ok_button"]()
-            ass_win.destroy()
+            if(validate(year,month,day)):
+                self._asig.set_deadline(year, month, day, hour, minute)
+                self._funcs["on_ok_button"]()
+                ass_win.destroy()
+            else:
+                msg = year_combobox.get()+"年"+month_combobox.get()+"月"+day_combobox.get()+"日は存在しません！"
+                tk.messagebox.showerror(title="入力エラー",message=msg)
 
         # 完了ボタン
         ok_button = tk.Button(frame_deadline,bg=_base_color,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)   
