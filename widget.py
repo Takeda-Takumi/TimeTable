@@ -5,6 +5,8 @@ from functools import partial
 # subject.py のインポート
 import subject as subj
 
+BASE_COLOR = "#F9F9F9"
+ACCENT_COLOR = "#00ACEE"
 class Widget(tk.Button):
     def __init__(self):
         self._func = lambda self:print("ボタンを押したときの関数をセットしてください")
