@@ -6,6 +6,9 @@ import custom_widgets as cw
 
 from functools import partial
 
+_base_color='#F9F9F9'
+_accent_color='#00ACEE'
+
 # 課題入力用クラス
 class InputAssignment:
     def __init__(self, master=None):
@@ -33,16 +36,17 @@ class InputAssignment:
         ass_win.geometry("670x120")
         ass_win.title("課題追加")
         ass_win.option_add("*Font","bold 20")
-        ass_win.lift()
+        # ass_win.lift()
         ass_win.attributes("-topmost",True)
 
         # 課題名用フレーム
         frame_name=tk.Frame(ass_win)
         frame_name.pack(side="top",fill='both', expand=True)
+        frame_name.config(bg=_base_color)
 
         # 課題名ラベル
         label_name = tk.Label(frame_name)
-        label_name.config(text = "課題名:")
+        label_name.config(text = "課題名:",bg=_base_color)
         label_name.pack(side='left')
 
         # 課題名入力
@@ -60,10 +64,11 @@ class InputAssignment:
         # 期限用フレーム
         frame_deadline=tk.Frame(ass_win)
         frame_deadline.pack(side="top",fill='both', expand=True)
+        frame_deadline.config(bg=_base_color)
 
         # 期限ラベル
         label_deadline = tk.Label(frame_deadline)
-        label_deadline.config(text = "提出期限:")
+        label_deadline.config(text = "提出期限:",bg=_base_color)
         label_deadline.pack(side="left")
 
         today=date.today()
@@ -86,7 +91,7 @@ class InputAssignment:
         year_combobox.pack()
 
         label_year = tk.Label(frame_deadline)
-        label_year.config(text = "年")
+        label_year.config(text = "年",bg=_base_color)
         label_year.pack(side="left")
         label_year.pack()
 
@@ -96,7 +101,7 @@ class InputAssignment:
         month_combobox.pack()
 
         label_month = tk.Label(frame_deadline)
-        label_month.config(text = "月")
+        label_month.config(text = "月",bg=_base_color)
         label_month.pack(side="left")
         label_month.pack()
 
@@ -106,7 +111,7 @@ class InputAssignment:
         day_combobox.pack()
 
         label_day = tk.Label(frame_deadline)
-        label_day.config(text = "日")
+        label_day.config(text = "日",bg=_base_color)
         label_day.pack(side="left")
         label_day.pack()
 
@@ -116,7 +121,7 @@ class InputAssignment:
         hour_combobox.pack()
 
         label_hour = tk.Label(frame_deadline)
-        label_hour.config(text = "時")
+        label_hour.config(text = "時",bg=_base_color)
         label_hour.pack(side="left")
         label_hour.pack()
 
@@ -126,14 +131,12 @@ class InputAssignment:
         minute_combobox.pack()
 
         label_minute = tk.Label(frame_deadline)
-        label_minute.config(text = "分")
+        label_minute.config(text = "分",bg=_base_color)
         label_minute.pack(side="left")
         label_minute.pack()
 
         def mouse_on(e):
-            # ok_button['fg'] = '#19ADF8'
-            ok_button['fg'] = '#FF3125'
-
+            ok_button['fg'] = _accent_color
         def mouse_leave(e):
             # ok_button['background'] = '#E6E3E2'
             ok_button['fg'] = 'gray'
@@ -153,7 +156,8 @@ class InputAssignment:
             ass_win.destroy()
 
         # 完了ボタン
-        ok_button = tk.Button(frame_deadline,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
+        ok_button = tk.Button(frame_deadline,bg=_base_color,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
+        # ok_button = tk.Button(frame_deadline,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)
         # ok_button = tk.Button(frame_deadline,text = "OK",relief="groove",overrelief="raised",command=buttonclicked)
         ok_button.pack(side="left")
         ok_button.bind("<Enter>", mouse_on)
