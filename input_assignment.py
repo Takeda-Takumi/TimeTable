@@ -32,7 +32,7 @@ class InputAssignment:
 
     def make_window(self):
 
-        default_name = "最適化レポート"
+        default_name = "課題名"
         # default_deadline = "2022/12/08/12/34"
 
         ass_win = tk.Toplevel(self._master)
@@ -48,18 +48,22 @@ class InputAssignment:
         frame_name.config(bg=_base_color)
 
         # 課題名ラベル
-        label_name = tk.Label(frame_name)
-        label_name.config(text = "課題名:",bg=_base_color)
-        label_name.pack(side='left')
+        # label_name = tk.Label(frame_name)
+        # label_name.config(text = "課題名:",bg=_base_color)
+        # label_name.pack(side='left')
 
         # 課題名入力
-        ent_name = tk.Entry(frame_name,fg="gray")
+        ent_name = tk.Entry(frame_name,fg="gray",insertbackground=_accent_color)
         ent_name.insert(0,default_name)
+        ent_name.icursor(0)
+
 
         def clear(event):
-            ent_name["fg"]="black"
+            ent_name["fg"]=_accent_color
             if ent_name.get() == default_name:
                 ent_name.delete(0,len(ent_name.get()))
+                ent_name.icursor(0)
+
 
         ent_name.bind("<Button-1>",clear)
         ent_name.pack(side="left")
