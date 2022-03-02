@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
+from ast import Return
 import tkinter as tk
 from tkinter import ttk
 from datetime import date, datetime
+from tokenize import Double
 from turtle import title
 import subject as sb
 import custom_widgets as cw
@@ -57,13 +59,11 @@ class InputAssignment:
         ent_name.insert(0,default_name)
         ent_name.icursor(0)
 
-
         def clear(event):
             ent_name["fg"]=_accent_color
             if ent_name.get() == default_name:
                 ent_name.delete(0,len(ent_name.get()))
                 ent_name.icursor(0)
-
 
         ent_name.bind("<Button-1>",clear)
         ent_name.pack(side="left")
@@ -184,6 +184,19 @@ class InputAssignment:
             # ok_button['background'] = '#E6E3E2'
             ok_button['fg'] = 'gray'
 
+        # 入力日付と現在時刻との比較
+        def checkdeadline(year, month, day, hour, minute):
+            current_time = datetime.now()
+            inputed_time = datetime(year, month, day, hour, minute)
+            if(current_time>=inputed_time):
+                overdate=(current_time-inputed_time).days
+                print(overdate)
+                overdate = int(overdate)
+                # return False
+                return overdate
+            else:
+                return -1
+
         # 日付の検証関数
         def validate(year,month,day):
             validate_date=True
@@ -205,13 +218,19 @@ class InputAssignment:
             day = int(day_combobox.get())
             hour = int(hour_combobox.get())
             minute = int(minute_combobox.get())
-            if(validate(year,month,day)):
+            if(validate(year,month,day) and checkdeadline(year, month, day, hour, minute)==-1):
                 self._asig.set_deadline(year, month, day, hour, minute)
                 self._funcs["on_ok_button"]()
                 ass_win.destroy()
-            else:
+            elif(validate(year,month,day)==False):
                 msg = year_combobox.get()+"年"+month_combobox.get()+"月"+day_combobox.get()+"日は存在しません！"
                 tk.messagebox.showerror(title="入力エラー",message=msg)
+            else:
+                msg = "既に期限が過ぎています！"
+                msg2 = "時間前の課題です！"
+                overdate = int(checkdeadline(year, month, day, hour, minute))
+                overhour = overdate*24
+                tk.messagebox.showerror(title="入力エラー",message=msg+"\n"+str(overhour)+msg2)
 
         # 完了ボタン
         ok_button = tk.Button(frame_deadline,bg=_base_color,text = "Add",fg='gray',relief="flat",overrelief="flat",command=buttonclicked)   
@@ -229,7 +248,6 @@ if __name__ == "__main__":
     bt1 = tk.Button(text="input assignment", command=ina.make_window)
     bt1.pack()
     ina.set_func( "on_ok_button", lambda: print("on_ok") )
-
 
     bt2 = tk.Button(text="print assignment", command = lambda : print(ina.get()))
     bt2.pack()
