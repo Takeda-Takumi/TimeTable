@@ -14,6 +14,7 @@ class AssignmentFrame(tk.Frame):
         super().__init__(master)
         self._root_win=tk.Frame(master)
         self._asig=asig
+        self._funcs={"on_remove": (lambda : {print("lambda")}) }
         self._make()
 
     def _make(self):
@@ -22,11 +23,11 @@ class AssignmentFrame(tk.Frame):
         size_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="size_frame")
         name_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
         dead_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
-        bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
+        bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="bt_frame")
 
         l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15), bg=name_frame.cget("bg"))
         l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15), bg=dead_frame.cget("bg"))
-        bt_remove=tk.Button(bt_frame, text="削除", font=("", 10))
+        bt_remove=tk.Button(bt_frame, text="削除", font=("", 10), command=self._funcs["on_remove"], name="bt_remove")
 
         l_name.pack(anchor=tk.W, pady = 5, padx=3)
         l_dead.pack(pady=5)
@@ -51,6 +52,13 @@ class AssignmentFrame(tk.Frame):
 
     def winfo_width(self):
         return self._root_win.winfo_width()
+
+    def set_func(self, func, *args):
+        # bt = self._root_win.nametowidget("bt_frame").nametowidget("bt_remove").bind("<Button-1>", partial(func, *args))
+        self._root_win.nametowidget("bt_frame").nametowidget("bt_remove").config(command=partial(func, *args))
+
+    def get_assigment(self):
+        return self._asig
 
 #詳細画面クラス
 class DetailWindow:
@@ -92,6 +100,8 @@ class DetailWindow:
         self._x = 100
         self._y = 100
         self._colors = { "bg_front":DetailWindow.Accentsc, "bg_back":DetailWindow.Basec, "bg_en":DetailWindow.Basec, "fg_memo_title":DetailWindow.Accentsc, "char_base":"SystemWindowText", "en_insertbg":"SystemWindowText"}
+        self._keys = { "make_date": (lambda x : x.get_deadline(), False), "close_dead": (lambda x : x.get_deadline(), False) }
+        self._key="close_dead"
 
         tmp = [ "window_closed", "on_restore"]
         for i in tmp:
@@ -229,7 +239,6 @@ class DetailWindow:
 
     #windowを展開
     def _make_window(self):
-
         def _focus_out(*args):
             l_kadai_title.focus()
 
@@ -252,13 +261,13 @@ class DetailWindow:
         commands_frame.pack( side=tk.BOTTOM, fill = tk.X, ipadx = 10)
         kadai_frame.pack( expand = True, fill = tk.BOTH)
 
-        en_name = cw.GuideEntry(name_frame, font = ("", 15, "bold"), bg=self._colors["bg_en"], fg=self._colors["char_base"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], name="en_name")
+        en_name = cw.GuideEntry(name_frame, font = ("", 18), bg=self._colors["bg_en"], fg=self._colors["char_base"], relief=tk.SOLID, insertbackground=self._colors["en_insertbg"], name="en_name")
         #name_frame内
         en_name.bind("<Return>", _focus_out)
         en_name.set_alpha_color("light sky blue")
         en_name.set_alpha_str("科目名")
 
-        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 3, pady=3)
+        en_name.pack(side=tk.LEFT, expand=True, fill = tk.X, padx = 5, pady=10)
 
         #memo_frame内
         self._imgs["l_memo_title"]=tk.PhotoImage(file="./image/detail_window/ico_memo_32.png")
@@ -271,21 +280,20 @@ class DetailWindow:
         #kadai_frame内
         self._imgs["l_kadai_title"]=tk.PhotoImage(file="./image/detail_window/ico_asig_title_32_black.png")
         self._imgs["l_kadai_announce"]=tk.PhotoImage(file="./image/detail_window/ico_announce_16_white.png")
-        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_front"], fg="grey19", bd=0, font=("HGSｺﾞｼｯｸE", 15), relief = tk.SOLID, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
+        l_kadai_title = tk.Label(kadai_frame, text="課題一覧", bg = self._colors["bg_back"], fg="grey19", bd=0, font=("HGSｺﾞｼｯｸE", 15), relief = tk.SOLID, image=self._imgs["l_kadai_title"], compound="left", name="l_kadai_title")
         l_kadai_announce=tk.Label(kadai_frame, text="最近の締め切りは\"2022/6/7\"です", fg=self._colors["char_base"],bg= self._colors["bg_back"], font=("", 10), image=self._imgs["l_kadai_announce"], compound="left", pady=3, name="l_kadai_announce")
         asig_frame=tk.Frame(kadai_frame, bg=self._colors["bg_back"], name="asig_frame")
         sf_kadai= cw.ScrollFrame(asig_frame, name="sf_kadai")
 
         def _add_asig():
-            ias=ia.InputAssignment()
+            ias=ia.InputAssignment(self._win)
 
             def _add_widget():
+
                 assignment = ias.get()
                 if ( not self._subject.add_asg(assignment) ):
                     return
-                asigf = AssignmentFrame(sf_kadai.get(), assignment)
-                asigf.config_width(sf_kadai.cget_canvas("width"))
-                sf_kadai.pack_widget(asigf, pady=5)
+                self._place_asi()
 
             ias.set_func("on_ok_button", _add_widget)
             ias.make_window()
@@ -339,9 +347,21 @@ class DetailWindow:
     def _place_asi(self):
         sf_kadai=self._find("sf_kadai")
         sf_kadai.all_destroy()
-        for asi in self._subject.get_assigments().values():
+        self._aisl = []
+        tmpl = sorted(self._subject.get_assigments().values(), key=self._keys[self._key][0], reverse=self._keys[self._key][1])
+
+        def _remove_asig(i):
+            name = self._aisl[i].get_assigment().get_name()
+            # print(e.widget)
+            del self._subject.get_assigments()[name]
+            self._place_asi()
+            sf_kadai.mouse_top()
+
+        for i, asi in enumerate(tmpl):
             asigf = AssignmentFrame(sf_kadai.get(), asi)
             asigf.config_width(sf_kadai.cget_canvas("width"))
+            asigf.set_func(partial(_remove_asig,i))
+            self._aisl.append(asigf)
             sf_kadai.pack_widget(asigf, pady=5)
 
     #windowの削除
@@ -385,8 +405,8 @@ if __name__ == "__main__":
     asi2=sb.Assignment("課題2")
     asi2.set_deadline(2022, 12, 31, 12, 0)
 
-    subject.add_asg(assignment)
-    subject.add_asg(asi2)
+    # subject.add_asg(assignment)
+    # subject.add_asg(asi2)
 
     dw = DetailWindow(root)
     dw.set_subject(subject)

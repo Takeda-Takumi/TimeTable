@@ -1,4 +1,5 @@
 import tkinter as tk
+from functools import partial
 
 #keys, configure関数必須
 class RestoreConfigure:
@@ -217,35 +218,48 @@ class ScrollFrame(tk.Frame):
             del kwargs["name"]
         else:
             super().__init__(master)
-        self._outframe=tk.Frame(master)
-        self._canvas = tk.Canvas(self._outframe,bg="khaki2")
-        self._inframe = tk.Frame(self._canvas, kwargs, pady = 10, bg="khaki2")
+        self._outframe=tk.Frame(master, bg="khaki2")
+        self._canvas = tk.Canvas(self._outframe,bg=self._outframe.cget("bg"))
+        self._inframe = tk.Frame(self._canvas, kwargs, bg=self._canvas.cget("bg"))
         self._scrollbar_y = tk.Scrollbar(self._outframe, orient=tk.VERTICAL, command=self._canvas.yview)
 
-        self._inframe.bind("<Configure>", self._adjust)
+        self._canvas.bind("<Configure>", self._func)
         self._outframe.bind("<Map>", self._adjust)
         self._inframe.bind("<MouseWheel>", self._mouse_y_scroll)
-        self._canvas.create_window(0,0,window = self._inframe, anchor="c", )
+        self._canvas.create_window(0,0,window = self._inframe, anchor="c", tag="in_frame")
         self._canvas.config(yscrollcommand=self._scrollbar_y.set)
-
-        self._canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+        self._canvas.configure(width=300)
+        self._canvas.pack(side=tk.LEFT, fill = tk.Y)
+        self._canvas.update_idletasks()
         self._scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-    def _adjust(self, e):
-        maxw, maxh = 0, 0
+    def _func(self, e):
+        e.widget.update_idletasks()
+        self._canvas.configure(scrollregion=self._canvas.bbox("in_frame"))
 
-        self._canvas.configure(scrollregion=self._canvas.bbox("all"))
+    def _adjust(self, e=None):
+        maxw, maxh = 1, 1
+        self._inframe.update_idletasks()
+        self._canvas.configure(scrollregion=self._canvas.bbox("in_frame"))
+        self._canvas.pack(side=tk.LEFT)
         for w in self._inframe.winfo_children():
             maxw = max(maxw, w.winfo_width())
-        if ( maxw == 0 ):
+        if ( maxw == 1 ):
             maxw = 300
         self._canvas.configure(width=maxw)
 
     def _mouse_y_scroll(self, event):
+        if type(event.widget) == type(self._canvas):
+            self._canvas = event.widget
+        # print("scrool ", self._canvas.cget("scrollregion"))
         if event.delta > 0:
             self._canvas.yview_scroll(-1, 'units')
         elif event.delta < 0:
             self._canvas.yview_scroll(1, 'units')
+
+    def mouse_top(self, event=None):
+        # self._canvas.yview_scroll(-10000, 'units')
+        pass
 
     #canvasの設定変更
     def canvas_config(self, **kwargs):
@@ -264,6 +278,7 @@ class ScrollFrame(tk.Frame):
 
     def pack(self, **kwargs):
         self._outframe.pack(kwargs)
+        self._adjust()
 
     def grid(self, **kwargs):
         self._outframe.grid(kwargs)
@@ -271,6 +286,7 @@ class ScrollFrame(tk.Frame):
     def pack_widget(self, widget, **kwargs):
         widget.bind_all("<MouseWheel>", self._mouse_y_scroll)
         widget.pack(**kwargs)
+        self._adjust()
 
     def all_destroy(self):
         for w in self._inframe.winfo_children():
@@ -377,15 +393,11 @@ if __name__ == "__main__":
     ge.pack()
 
     sf = ScrollFrame(root)
-    bt1 = tk.Button(sf.get(), text="button1")
-    bt2 = tk.Button(sf.get(), text="button2")
-    sf.pack_widget(bt1)
-    sf.pack_widget(bt2)
+    # bt1 = tk.Button(sf.get(), text="button1")
+    # bt2 = tk.Button(sf.get(), text="button2")
+    # sf.pack_widget(bt1)
+    # sf.pack_widget(bt2)
 
-    bt3=tk.Button(root, text="all destroy", command=sf.all_destroy)
-    entry=tk.Entry(root)
-    print(entry.cget("fg"))
-    bt3.pack()
     sf.pack()
     # print(l1.cget("width"))
     root.mainloop()
