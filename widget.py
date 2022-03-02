@@ -15,7 +15,11 @@ class Widget(tk.Button):
         self._func = lambda self:print("ボタンを押したときの関数をセットしてください")
         self._subject = subj.Subject()
         self._button = tk.Button(bg=BASE_COLOR, width = w, height=h, borderwidth=0, command=self.button_func)
+        self._pre_bg = ""   # leave_widgetで使用する。マウスオーバーしたときにその色を記録する変数。
         # self._button.place(width=w, height=h)
+
+        self._button.bind("<Enter>", self.enter_widget)
+        self._button.bind("<Leave>", self.leave_widget)
 
     # ボタンが押されたときに実行する関数をセットする関数。
     # Widget.set_button_func(<ボタンを押したときに実行する関数>, 引数1, 引数2, …)でセット可能。
@@ -71,6 +75,34 @@ class Widget(tk.Button):
     # _subjectの課題の中で最も近い締切日を返す
     def get_subj_close_asg_deadline(self):
         return self._subject.get_close_asg_deadline()
+
+    def enter_widget(self, event):
+        # 関数定義-------------------------------------------------------------------
+        def colorcode_to_rgb(color_code):
+            # color_code(#89ABCD) -> 89, AB, CD
+            r = int(color_code[1:3], 16)
+            g = int(color_code[3:5], 16)
+            b = int(color_code[5:7], 16)
+            return r, g, b
+
+        def darker_rgb(r, g, b):
+            darkness = 1.125
+            new_r = int(r / darkness)
+            new_g = int(g / darkness)
+            new_b = int(b / darkness)
+            return new_r, new_g, new_b
+
+        def rgb_to_colorcode(r, g, b):
+            return "#" + '{:x}'.format(r) + '{:x}'.format(g) + '{:x}'.format(b)
+        # -------------------------------------------------------------------------
+
+        self._pre_bg = event.widget['bg']
+        r, g, b = colorcode_to_rgb(self._pre_bg)
+        r, g, b = darker_rgb(r, g, b)
+        event.widget['bg'] = rgb_to_colorcode(r, g, b)
+
+    def leave_widget(self, event):
+        event.widget['bg'] = self._pre_bg
 
 if __name__ == "__main__":
     pass
