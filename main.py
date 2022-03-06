@@ -21,13 +21,13 @@ class Application(tk.Frame):
         self.update_idletasks()
         self.master.title("TimeTable")
         self._detail_window = dw.DetailWindow(self) # DetailWindow型の変数
-        self._dw_is_open = False # _detail_windowがすでに開いてるかどうかの変数
-        self._button_width = int(self.master.winfo_width()/WINDOW_WIDTH_RATIO)
+        self._dw_is_open    = False # _detail_windowがすでに開いてるかどうかの変数
+        self._button_width  = int(self.master.winfo_width()/WINDOW_WIDTH_RATIO)
         self._button_height = int(self.master.winfo_height()/WINDOW_HEIGHT_RATIO)
 
         # ウィジェットを作成
         self.widgets = [wg.Widget(self._button_width, self._button_height) for i in range(36)]
-        # self.widgets = [wg.Widget(1000, 1)  for i in range(36)]
+
         for i in range(6):
             for j in range(6):
                 # ボタンの関数を設定
@@ -41,7 +41,6 @@ class Application(tk.Frame):
         self.create_timetable()
         self.input_test_data()
 
-
     # ---ボタンを押せはするが、ウィンドウは１つしか開かなくする方法---
     def button_func(self, widget):
         if not self._dw_is_open:
@@ -51,26 +50,6 @@ class Application(tk.Frame):
             self._detail_window.set_func("on_restore", self.change_text_and_color)
             self._detail_window.show_window()
     
-    # ------
-    # # ---ボタンを押せなくする方法---
-    # def button_func(self, widget):
-    #     self.stop_buttons()
-    #     self._detail_window = dw.DetailWindow(self, widget.get_subject())
-    #     self._detail_window._set_func_restore(self.change_text_and_color)
-    #     self._detail_window._set_func(self.dw_close)
-    #     has = tk.BooleanVar(value=True)
-    #     self._detail_window.show_window(has)
-    
-    # def stop_buttons(self):
-    #     for wgt in self.widgets:
-    #         wgt.stop_button()
-
-    # def restart_buttons(self):
-    #     for wgt in self.widgets:
-    #         wgt.restart_button()
-    # # -------
-
-
     # widgetsのテキストと色を更新する関数
     def change_text_and_color(self):
         for widget in self.widgets:
@@ -88,7 +67,6 @@ class Application(tk.Frame):
                         widget.set_color("#F8C471") # 3日以上なら黄色
                     else:
                         widget.set_color("#E74C3C") # 3日以内なら赤
-
         self.save_timetable()
         self.load_timetable()
 
@@ -165,9 +143,6 @@ class Application(tk.Frame):
         with shelve.open("timetable.shelve",) as file:
             for i in range(len(self.widgets)):
                 self.widgets[i].set_subject(file[str(i)])
-
-
-
 
 ##------------------
 if __name__ == "__main__":
