@@ -35,24 +35,16 @@ class InputAssignment:
     def make_window(self):
 
         default_name = "課題名"
-        # default_deadline = "2022/12/08/12/34"
-
         ass_win = tk.Toplevel(self._master)
         ass_win.geometry("670x120")
         ass_win.title("課題追加")
         ass_win.option_add("*Font","bold 20")
-        # ass_win.lift()
         ass_win.attributes("-topmost",True)
 
         # 課題名用フレーム
         frame_name=tk.Frame(ass_win)
         frame_name.pack(side="top",fill='both', expand=True)
         frame_name.config(bg=_base_color)
-
-        # 課題名ラベル
-        # label_name = tk.Label(frame_name)
-        # label_name.config(text = "課題名:",bg=_base_color)
-        # label_name.pack(side='left')
 
         # 課題名入力
         ent_name = tk.Entry(frame_name,fg="gray",insertbackground=_accent_color)
@@ -77,10 +69,7 @@ class InputAssignment:
         label_deadline = tk.Label(frame_deadline)
         label_deadline.config(text = "提出期限:",bg=_base_color)
         label_deadline.pack(side="left")
-
         today=date.today()
-        # print(today.year)
-        # print(type(today.year))
         default_year_index=today.year-2022
         default_month_index=today.month-1
         default_day_index=today.day-1
@@ -127,20 +116,15 @@ class InputAssignment:
         def changeday(event):
             check_leap_year = is_leap_year(int(year_combobox.get()))
             check_month = int(month_combobox.get())
-            # print("!!!!!!!!!!!!!!check_month",check_month)
             if(check_month==2):
                 if(check_leap_year==True):
                     day_combobox['values']=day29_values
-                    # print("day28_values",day29_values)
                 else:
                     day_combobox['values']=day28_values
-                    # print("day28_values",day28_values)
             elif(check_month==4 or check_month==6 or check_month==9 or check_month==11):
                 day_combobox['values']=day30_values
-                # print("day30_values",day30_values)
             else:
                 day_combobox['values']=day31_values
-                # print("day31_values",day31_values)
        
         #day_combobox 生成
         day_combobox = ttk.Combobox(frame_deadline,width=2,state="readonly")
@@ -181,7 +165,6 @@ class InputAssignment:
         def mouse_on(e):
             ok_button['fg'] = _accent_color
         def mouse_leave(e):
-            # ok_button['background'] = '#E6E3E2'
             ok_button['fg'] = 'gray'
 
         # 入力日付と現在時刻との比較
@@ -192,7 +175,6 @@ class InputAssignment:
                 overdate=(current_time-inputed_time).days
                 print(overdate)
                 overdate = int(overdate)
-                # return False
                 return overdate
             else:
                 return -1
@@ -237,8 +219,6 @@ class InputAssignment:
         ok_button.pack(side="left")
         ok_button.bind("<Enter>", mouse_on)
         ok_button.bind("<Leave>", mouse_leave)
-
-
 
 if __name__ == "__main__":
     root = tk.Tk()
