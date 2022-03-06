@@ -60,7 +60,6 @@ class AssignmentFrame(tk.Frame):
         return self._root_in.winfo_width()
 
     def set_func(self, func, *args):
-        # bt = self._root_in.nametowidget("bt_frame").nametowidget("bt_remove").bind("<Button-1>", partial(func, *args))
         self._root_in.nametowidget("bt_frame").nametowidget("bt_remove").config(command=partial(func, *args))
 
     def get_assigment(self):
@@ -302,8 +301,6 @@ class DetailWindow:
 
             ias.set_func("on_ok_button", _add_widget)
             ias.make_window()
-            # tmp = tk.Button(sf_kadai.get(), text="追加された課題", bg="Medium purple1")
-            # sf_kadai.pack_widget(tmp, pady=5)
 
         l_kadai_title.pack(fill = tk.X)
         l_kadai_announce.pack()
@@ -418,10 +415,7 @@ if __name__ == "__main__":
     assignment.set_deadline(2022, 6, 30, 23, 55)
     asi2=sb.Assignment("課題2")
     asi2.set_deadline(2022, 12, 31, 12, 0)
-
-    # subject.add_asg(assignment)
-    # subject.add_asg(asi2)
-
+    
     dw = DetailWindow(root)
     dw.set_subject(subject)
 

@@ -251,14 +251,12 @@ class ScrollFrame(tk.Frame):
     def _mouse_y_scroll(self, event):
         if type(event.widget) == type(self._canvas):
             self._canvas = event.widget
-        # print("scrool ", self._canvas.cget("scrollregion"))
         if event.delta > 0:
             self._canvas.yview_scroll(-1, 'units')
         elif event.delta < 0:
             self._canvas.yview_scroll(1, 'units')
 
     def mouse_top(self, event=None):
-        # self._canvas.yview_scroll(-10000, 'units')
         pass
 
     #canvasの設定変更
@@ -379,25 +377,3 @@ class GuideButton(tk.Button):
 
     def _rev(self):
         self._selected= ( not self._selected)
-
-if __name__ == "__main__":
-
-    root = tk.Tk()
-    root.title("Main Window")
-    root.geometry("300x300")
-
-    ge = GuideEntry(root)
-    ge.set_alpha_str("科目名")
-    ge.set_alpha_color("red")
-    ge.insert("最適化")
-    ge.pack()
-
-    sf = ScrollFrame(root)
-    # bt1 = tk.Button(sf.get(), text="button1")
-    # bt2 = tk.Button(sf.get(), text="button2")
-    # sf.pack_widget(bt1)
-    # sf.pack_widget(bt2)
-
-    sf.pack()
-    # print(l1.cget("width"))
-    root.mainloop()
