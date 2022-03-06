@@ -9,27 +9,31 @@ import input_assignment as ia
 from functools import partial
 #
 class AssignmentFrame(tk.Frame):
-    colors = { "base_bg": "#4ddb6e"}
+    colors = { "base_bg": "#f9f9f9", "base_bd" : "#00acee"}
     def __init__(self, master = None, asig= sb.Assignment(), name1=None):
         super().__init__(master)
-        self._root_win=tk.Frame(master)
+        self._root_out=tk.Frame(master)
+        self._root_in=tk.Frame(self._root_out)
         self._asig=asig
         self._funcs={"on_remove": (lambda : {print("lambda")}) }
+        self._imgs={}
         self._make()
 
     def _make(self):
-        self._root_win.config(bg=AssignmentFrame.colors["base_bg"])
+        self._root_out.config(bg=AssignmentFrame.colors["base_bd"])
+        self._root_in.config(bg=AssignmentFrame.colors["base_bg"])
+        self._imgs["bt_remove"] = tk.PhotoImage(file="./image/detail_window/asig_frame_remove_16.png")
 
-        size_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="size_frame")
-        name_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
-        dead_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"))
-        bt_frame=tk.Frame(self._root_win, bg=self._root_win.cget("bg"), name="bt_frame")
+        size_frame=tk.Frame(self._root_out, bg=self._root_in.cget("bg"), name="size_frame")
+        name_frame=tk.Frame(self._root_in, bg=self._root_in.cget("bg"))
+        dead_frame=tk.Frame(self._root_in, bg=self._root_in.cget("bg"))
+        bt_frame=tk.Frame(self._root_in, bg=self._root_in.cget("bg"), name="bt_frame")
 
         l_name=tk.Label(name_frame, text=self._asig.get_name(), font=("", 15), bg=name_frame.cget("bg"))
         l_dead=tk.Label(dead_frame, text=f"締め切り: {str(self._asig.get_deadline())}",font=("", 15), bg=dead_frame.cget("bg"))
-        bt_remove=tk.Button(bt_frame, text="削除", font=("", 10), command=self._funcs["on_remove"], name="bt_remove")
+        bt_remove=tk.Button(bt_frame, command=self._funcs["on_remove"], name="bt_remove", image=self._imgs["bt_remove"], cursor="hand2")
 
-        l_name.pack(anchor=tk.W, pady = 5, padx=3)
+        l_name.pack(anchor=tk.W, pady = 4, padx=4)
         l_dead.pack(pady=5)
         bt_remove.pack(anchor=tk.E)
 
@@ -38,24 +42,26 @@ class AssignmentFrame(tk.Frame):
         dead_frame.pack(expand=True, fill=tk.X)
         bt_frame.pack(expand=True, fill=tk.X)
 
+        self._root_in.pack(pady=3, padx=3, expand=True, fill=tk.BOTH)
+
     def configure(self, **kwargs):
-        self._root_win.configure(**kwargs)
+        self._root_out.configure(**kwargs)
 
     def bind(self, *args):
-        self._root_win.bind(*args)
+        self._root_in.bind(*args)
 
     def pack(self, **kwargs):
-        self._root_win.pack(**kwargs)
+        self._root_out.pack(**kwargs)
 
     def config_width(self, width):
-        self._root_win.nametowidget("size_frame").configure(width=width)
+        self._root_out.nametowidget("size_frame").configure(width=width)
 
     def winfo_width(self):
-        return self._root_win.winfo_width()
+        return self._root_in.winfo_width()
 
     def set_func(self, func, *args):
-        # bt = self._root_win.nametowidget("bt_frame").nametowidget("bt_remove").bind("<Button-1>", partial(func, *args))
-        self._root_win.nametowidget("bt_frame").nametowidget("bt_remove").config(command=partial(func, *args))
+        # bt = self._root_in.nametowidget("bt_frame").nametowidget("bt_remove").bind("<Button-1>", partial(func, *args))
+        self._root_in.nametowidget("bt_frame").nametowidget("bt_remove").config(command=partial(func, *args))
 
     def get_assigment(self):
         return self._asig
@@ -248,7 +254,6 @@ class DetailWindow:
         self._win.withdraw()
         self._win.title("SubWindow")
         self._win.geometry(f"400x700+{self._x}+{self._y}")
-        self._win.attributes("-topmost", True)
         self._win.bind("<Destroy>", self._rest_pos, "+")
         #frame設定
         name_frame = tk.Frame(self._win, bg = self._colors["bg_front"], name="name_frame")
@@ -301,7 +306,7 @@ class DetailWindow:
             # sf_kadai.pack_widget(tmp, pady=5)
 
         l_kadai_title.pack(fill = tk.X)
-        l_kadai_announce.pack()
+        # l_kadai_announce.pack()
         asig_frame.pack( anchor=tk.CENTER, expand=True, fill=tk.Y)
         sf_kadai.pack(side=tk.LEFT,expand=True, fill=tk.Y)
 
