@@ -306,7 +306,7 @@ class DetailWindow:
             # sf_kadai.pack_widget(tmp, pady=5)
 
         l_kadai_title.pack(fill = tk.X)
-        # l_kadai_announce.pack()
+        l_kadai_announce.pack()
         asig_frame.pack( anchor=tk.CENTER, expand=True, fill=tk.Y)
         sf_kadai.pack(side=tk.LEFT,expand=True, fill=tk.Y)
 
@@ -355,6 +355,15 @@ class DetailWindow:
         self._aisl = []
         tmpl = sorted(self._subject.get_assigments().values(), key=self._keys[self._key][0], reverse=self._keys[self._key][1])
 
+        l_kadai_announce=self._find("l_kadai_announce")
+        text = ""
+        if ( len(tmpl) == 0 ) :
+            text = "現在設定中の課題はありません。"
+        else:
+            date = tmpl[0].get_deadline()
+            text = f"最近の締め切りは{str(date)}です"
+
+        l_kadai_announce.config(text=text)
         def _remove_asig(i):
             name = self._aisl[i].get_assigment().get_name()
             # print(e.widget)
