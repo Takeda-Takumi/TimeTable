@@ -7,7 +7,7 @@
 時間割には、その科目の登録した課題の中で一番締め切りが近いものの期限を表示するようにしています。<br>
 また、締め切りが近くなるにつれてその科目のコマの色が変化するよう設定しているため、時間割全体を一目みるだけで、締め切りの近い課題がどれなのかを簡単に把握できるようにしています。<br>
 <br>
-![image](https://user-images.githubusercontent.com/91676218/157192770-304feb61-4866-43da-b286-a8badab88e9c.png)
+![timetable_example1](https://user-images.githubusercontent.com/91676218/157194010-c6ca679d-8926-484b-9872-cba62f7141cc.png)
 
 
 ## 必要要件
